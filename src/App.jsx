@@ -1,12 +1,15 @@
-import React from 'react'
-import Invoice from './Invoice'
+import React from "react";
+import Invoice from "./Invoice";
+import { BrowserRouter } from "react-router-dom";
 
 const App = () => {
   return (
     <>
-      <Invoice/>
+      <BrowserRouter>
+        <Invoice />
+      </BrowserRouter>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
