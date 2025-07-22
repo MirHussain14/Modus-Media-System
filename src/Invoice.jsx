@@ -343,7 +343,7 @@ const TableRow = ({
   );
 };
 
-const PricingTable = ({ title, mode, items = [] }) => {
+const PricingTable = ({ title, mode, items = [], showDownload = false }) => {
   // Calculate total price
   const totalPrice = items.reduce((sum, item) => {
     const price = parseFloat(item.totalPrice) || 0;
@@ -386,13 +386,9 @@ const PricingTable = ({ title, mode, items = [] }) => {
         .rotating-gradient-button {
           position: relative;
           border-radius: 9999px;
-          background: linear-gradient(
-            0deg,
-            #05acfc,
-            #0547ac,
-            #02e6db
-          );
-          border: 0.1px solid transparent;
+          ${mode === "dark"
+            ? `background: linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.01) 100%); border: 0.5px solid rgba(255,255,255,0.4);`
+            : `background: linear-gradient(0deg, #05acfc, #0547ac, #02e6db); border: 0.1px solid transparent;`}
         }
       `}</style>
 
@@ -404,18 +400,23 @@ const PricingTable = ({ title, mode, items = [] }) => {
         >
           {title}
         </h2>
-        <div className="rotating-gradient-button">
-          <button
-            className={`flex items-center gap-2 px-4 md:px-6 py-2 ${
-              mode === "dark"
-                ? "bg-[#042140] text-white"
-                : "bg-white text-black"
-            } rounded-full md:text-sm text-xs relative z-10`}
-          >
-            <img src="/Save.png" alt="" />
-            להוריד PDF
-          </button>
-        </div>
+        {showDownload && (
+          <div className="rotating-gradient-button">
+            <button
+              className={`flex items-center gap-2 px-4 md:px-8 py-2 ${
+                mode === "dark"
+                  ? "text-white"
+                  : "bg-white text-black"
+              } rounded-full text-xs relative z-10 shadow-none`}
+              style={mode === "dark"
+                ? { background: "linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.01) 100%)", border: "1px solid rgba(255,255,255,0.4)" }
+                : {}}
+            >
+              <img className="w-5 h-5" src={mode === "dark" ? "/Save Light.png" : "/Save.png"} alt="" />
+              להוריד PDF
+            </button>
+          </div>
+        )}
       </div>
       
       {/* Header outside the border */}
@@ -595,68 +596,62 @@ const processApiData = (apiResponse) => {
     let unitPrice = '';
     let totalPrice = '';
 
+    // Process description with priority: lookup_mksycx2a > board_relation_mksymdzw > name
+    const lookupDescription = columnValues.find(col => col.id === 'lookup_mksycx2a')?.display_value || '';
+    const relationDescription = columnValues.find(col => col.id === 'board_relation_mksymdzw')?.display_value || '';
+    description = lookupDescription || relationDescription || subitem.name || 'פריט';
+
     // Process each column value
     columnValues.forEach((column) => {
       const columnId = column.id || '';
       const displayValue = column.display_value || '';
       const textValue = column.text || '';
-      const columnTitle = column.column?.title || '';
+      const columnTitle = column.column?.title?.toLowerCase() || '';
 
-      // Determine status (recurring vs one time)
-      if (columnId.includes('color') || columnTitle.toLowerCase().includes('status')) {
+      // Determine status for categorization
+      if (columnId === 'color_mkszp4jg') {
         status = textValue || displayValue;
       }
 
-      // Get description with priority: lookup > relation > name
-      if (columnId.includes('lookup') && displayValue) {
-        description = displayValue;
-      } else if (columnId.includes('relation') && displayValue && !description) {
-        description = displayValue;
-      } else if (columnTitle.toLowerCase().includes('description') && displayValue && !description) {
-        subtitle = displayValue;
+      // Handle subtitle (description column)
+      if (columnId === 'long_text_mksy9egc' || columnTitle.includes('description')) {
+        subtitle = displayValue || textValue || subtitle;
       }
 
-      // Get other values based on column types and titles
-      if (columnTitle.toLowerCase().includes('unit') || columnTitle.toLowerCase().includes('מידה')) {
-        unit = displayValue || textValue || unit;
+      // Handle unit measure with lookup priority
+      if (columnTitle.includes('unit') || columnTitle.includes('מידה')) {
+        if (columnId.includes('lookup')) {
+          unit = displayValue || textValue || unit;
+        } else {
+          unit = displayValue || textValue || unit;
+        }
       }
 
-      if (columnId.includes('numeric') && columnTitle.toLowerCase().includes('quantity')) {
+      // Handle quantity
+      if (columnId === 'numeric_mksyftx0' || columnTitle.includes('quantity')) {
         quantity = textValue || displayValue || quantity;
       }
 
-      if (columnTitle.toLowerCase().includes('price') || columnTitle.toLowerCase().includes('מחיר')) {
-        if (columnTitle.toLowerCase().includes('unit') || columnTitle.toLowerCase().includes('יח')) {
-          unitPrice = textValue || displayValue;
-        } else if (columnTitle.toLowerCase().includes('total') || columnTitle.toLowerCase().includes('סה"כ')) {
-          totalPrice = textValue || displayValue;
+      // Handle unit price with lookup priority
+      if (columnTitle.includes('unit price') || columnTitle.includes('מחיר יח')) {
+        if (columnId.includes('lookup')) {
+          unitPrice = displayValue || textValue || unitPrice;
+        } else {
+          unitPrice = textValue || displayValue || unitPrice;
         }
       }
 
-      // Look for numeric values that might be prices
-      if (columnId.includes('numeric') && (textValue || displayValue)) {
-        const numValue = parseFloat(textValue || displayValue);
-        if (numValue && !unitPrice) {
-          unitPrice = (textValue || displayValue).toString();
-        }
-      }
-
-      // Look for formula values that might be totals
-      if (columnId.includes('formula') && (textValue || displayValue)) {
-        totalPrice = textValue || displayValue;
+      // Handle total price
+      if (columnId === 'formula_mksy3sr8' || columnTitle.includes('total') || columnTitle.includes('סה"כ')) {
+        totalPrice = textValue || displayValue || totalPrice;
       }
     });
-
-    // Fallback to subitem name if no description found
-    if (!description) {
-      description = subitem.name || 'פריט';
-    }
 
     // Calculate total price if not provided
     if (!totalPrice && unitPrice && quantity) {
       const unitPriceNum = parseFloat(unitPrice);
       const quantityNum = parseFloat(quantity);
-      if (unitPriceNum && quantityNum) {
+      if (!isNaN(unitPriceNum) && !isNaN(quantityNum)) {
         totalPrice = (unitPriceNum * quantityNum).toString();
       }
     }
@@ -745,10 +740,10 @@ const Invoice = () => {
         <hr className="bg-gray-500 h-[0.5px] border-0" />
         <InvoiceHeader mode={mode} />
         {recurringItems.length > 0 && (
-          <PricingTable title="תשלום חודשי קבוע" mode={mode} items={recurringItems} />
+          <PricingTable title="תשלום חודשי קבוע" mode={mode} items={recurringItems} showDownload={true} />
         )}
         {oneTimeItems.length > 0 && (
-          <PricingTable title="תשלום חד פעמי" mode={mode} items={oneTimeItems} />
+          <PricingTable title="תשלום חד פעמי" mode={mode} items={oneTimeItems} showDownload={false} />
         )}
         <Footer mode={mode} />
       </div>
