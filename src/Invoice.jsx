@@ -289,57 +289,110 @@ const TableRow = ({
     );
   }
 
+  const [showPopup, setShowPopup] = React.useState(false);
+  const isLongSubtitle = subtitle && subtitle.length > 150;
+  const truncatedSubtitle = isLongSubtitle
+    ? subtitle.slice(0, 150) + "..."
+    : subtitle;
+
   return (
-    <div className="md:px-6">
-      <div className="flex justify-between gap-4 px-4 md:px-6 py-2 border-b border-gray-300">
-        <div className="text-right flex-3">
+    <>
+      {showPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
           <div
-            className={`font-medium text-xs md:text-2xl ${
-              mode === "dark" ? "text-white" : "text-gray-800"
-            }`}
+            className="absolute inset-0 bg-white bg-opacity-[1%]"
+            onClick={() => setShowPopup(false)}
+            style={{ backdropFilter: "blur(2px)" }}
+          ></div>
+
+          {/* Popup */}
+          <div
+            className="relative z-10 bg-white rounded-3xl py-8 px-4 h-[400px] mx-auto w-[300px]"
+            style={{
+              border: "1px solid #1E9BF0",
+              boxShadow: "0 8px 10px rgba(0,0,0,0.12)",
+            }}x
           >
-            {description}
-          </div>
-          {subtitle && (
-            <div
-              className={`text-[9px] md:text-[14px] ${
-                mode === "dark" ? "text-gray-300" : "text-gray-500"
-              } mt-1`}
+            {/* Close button */}
+            <button
+              className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center transition-colors text-2xl p-3 rounded-full cursor-pointer bg-black text-white"
+              onClick={() => setShowPopup(false)}
             >
-              {subtitle}
+              X
+            </button>
+
+            {/* Content */}
+            <p className="text-right w-full mt-4" dir="rtl">
+                {subtitle}
+            </p>
+          </div>
+        </div>
+      )}
+      <div className="md:px-6">
+        <div className="flex justify-between gap-4 px-4 md:px-6 py-2 border-b border-gray-300">
+          <div className="text-right flex-3">
+            <div
+              className={`font-medium text-xs md:text-2xl ${
+                mode === "dark" ? "text-white" : "text-gray-800"
+              }`}
+            >
+              {description}
             </div>
-          )}
-        </div>
-        <div
-          className={`text-center text-xs hidden md:block md:text-2xl ${
-            mode === "dark" ? "text-white" : "text-gray-700"
-          } flex-1`}
-        >
-          {unit || 'יח\''}
-        </div>
-        <div
-          className={`text-center text-xs md:text-2xl ${
-            mode === "dark" ? "text-white" : "text-gray-700"
-          } flex-1`}
-        >
-          {quantity}
-        </div>
-        <div
-          className={`text-center text-xs md:text-2xl ${
-            mode === "dark" ? "text-white" : "text-gray-700"
-          } flex-1`}
-        >
-          {unitPrice} ₪
-        </div>
-        <div
-          className={`text-center text-xs md:text-2xl font-medium ${
-            mode === "dark" ? "text-white" : "text-gray-800"
-          } flex-1`}
-        >
-          {totalPrice} ₪
+            {subtitle && (
+              <div
+                className={`text-[9px] md:text-[14px] ${
+                  mode === "dark" ? "text-gray-300" : "text-gray-500"
+                } mt-1`}
+              >
+                {isLongSubtitle ? (
+                  <>
+                    {truncatedSubtitle}
+                    <button
+                      className="ml-2 text-blue-500 underline text-xs cursor-pointer"
+                      type="button"
+                      onClick={() => setShowPopup(true)}
+                    >
+                      קרא עוד
+                    </button>
+                  </>
+                ) : (
+                  subtitle
+                )}
+              </div>
+            )}
+          </div>
+          <div
+            className={`text-center text-xs hidden md:block md:text-2xl ${
+              mode === "dark" ? "text-white" : "text-gray-700"
+            } flex-1`}
+          >
+            {unit || "יח'"}
+          </div>
+          <div
+            className={`text-center text-xs md:text-2xl ${
+              mode === "dark" ? "text-white" : "text-gray-700"
+            } flex-1`}
+          >
+            {quantity}
+          </div>
+          <div
+            className={`text-center text-xs md:text-2xl ${
+              mode === "dark" ? "text-white" : "text-gray-700"
+            } flex-1`}
+          >
+            {unitPrice} ₪
+          </div>
+          <div
+            className={`text-center text-xs md:text-2xl font-medium ${
+              mode === "dark" ? "text-white" : "text-gray-800"
+            } flex-1`}
+          >
+            {totalPrice} ₪
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -355,14 +408,14 @@ const PricingTable = ({ title, mode, items = [], showDownload = false }) => {
 
   // PDF download handler
   const handleDownloadPDF = async () => {
-    const pdfDiv = document.querySelector('.PDF');
+    const pdfDiv = document.querySelector(".PDF");
     if (!pdfDiv) {
-      alert('לא נמצא אזור להורדת PDF');
+      alert("לא נמצא אזור להורדת PDF");
       return;
     }
     // Save original opacity style
     const originalOpacity = pdfDiv.style.opacity;
-    pdfDiv.style.opacity = '1';
+    pdfDiv.style.opacity = "1";
     try {
       // Get the size of the .PDF element
       const rect = pdfDiv.getBoundingClientRect();
@@ -375,12 +428,16 @@ const PricingTable = ({ title, mode, items = [], showDownload = false }) => {
       // Convert the div to PNG
       const pngDataUrl = await domtoimage.toPng(pdfDiv);
       // Create a new jsPDF instance with custom size
-      const pdf = new jsPDF({ orientation: 'p', unit: 'pt', format: [pdfWidth, pdfHeight] });
+      const pdf = new jsPDF({
+        orientation: "p",
+        unit: "pt",
+        format: [pdfWidth, pdfHeight],
+      });
       // Add the image to the PDF, filling the page
-      pdf.addImage(pngDataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save('invoice.pdf');
+      pdf.addImage(pngDataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save("invoice.pdf");
     } catch (err) {
-      alert('שגיאה ביצירת PDF: ' + err.message);
+      alert("שגיאה ביצירת PDF: " + err.message);
     } finally {
       // Restore original opacity
       pdfDiv.style.opacity = originalOpacity;
@@ -407,15 +464,11 @@ const PricingTable = ({ title, mode, items = [], showDownload = false }) => {
           padding: 0px;
           border-radius: 16px;
           background: linear-gradient(
-            ${mode === "dark" ? "#042140" : "#ffffff"}, 
-            ${mode === "dark" ? "#042140" : "#ffffff"}
-          ) padding-box,
-          linear-gradient(
-            var(--angle),
-            #05acfc,
-            #0547ac,
-            #02e6db
-          ) border-box;
+                ${mode === "dark" ? "#042140" : "#ffffff"},
+                ${mode === "dark" ? "#042140" : "#ffffff"}
+              )
+              padding-box,
+            linear-gradient(var(--angle), #05acfc, #0547ac, #02e6db) border-box;
           border: 1px solid transparent;
           animation: rotate 3s linear infinite;
         }
@@ -441,26 +494,34 @@ const PricingTable = ({ title, mode, items = [], showDownload = false }) => {
           <div className="rotating-gradient-button">
             <button
               className={`flex items-center gap-2 px-4 md:px-8 py-2 ${
-                mode === "dark"
-                  ? "text-white"
-                  : "bg-white text-black"
+                mode === "dark" ? "text-white" : "bg-white text-black"
               } rounded-full text-xs relative z-10 shadow-none cursor-pointer`}
-              style={mode === "dark"
-                ? { background: "linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.01) 100%)", border: "1px solid rgba(255,255,255,0.4)" }
-                : {}}
+              style={
+                mode === "dark"
+                  ? {
+                      background:
+                        "linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.01) 100%)",
+                      border: "1px solid rgba(255,255,255,0.4)",
+                    }
+                  : {}
+              }
               onClick={handleDownloadPDF}
               type="button"
             >
-              <img className="w-5 h-5" src={mode === "dark" ? "/Save Light.png" : "/Save.png"} alt="" />
+              <img
+                className="w-5 h-5"
+                src={mode === "dark" ? "/Save Light.png" : "/Save.png"}
+                alt=""
+              />
               להוריד PDF
             </button>
           </div>
         )}
       </div>
-      
+
       {/* Header outside the border */}
       <TableHeader mode={mode} />
-      
+
       {/* Bordered table body with animated rotating gradient border using CSS custom properties */}
       <div className="rotating-gradient-border mt-2">
         <div
@@ -483,12 +544,16 @@ const PricingTable = ({ title, mode, items = [], showDownload = false }) => {
             ))
           ) : (
             <div className="p-8 text-center">
-              <span className={`${mode === "dark" ? "text-white" : "text-gray-600"}`}>
+              <span
+                className={`${
+                  mode === "dark" ? "text-white" : "text-gray-600"
+                }`}
+              >
                 אין פריטים להצגה
               </span>
             </div>
           )}
-          
+
           {items.length > 0 && (
             <TableRow
               description={`סה״כ ${title}`}
@@ -628,44 +693,49 @@ const processApiData = (apiResponse) => {
 
   subitems.forEach((subitem) => {
     const columnValues = subitem.column_values || [];
-    let status = '';
-    let description = '';
-    let subtitle = '';
-    let unit = 'יח\'';
-    let quantity = '1';
-    let unitPrice = '';
-    let totalPrice = '';
+    let status = "";
+    let description = "";
+    let subtitle = "";
+    let unit = "יח'";
+    let quantity = "1";
+    let unitPrice = "";
+    let totalPrice = "";
 
     // Process description: use board_relation_mksymdzw display_value, fallback to subitem.name
-    const relationDescription = columnValues.find(col => col.id === 'board_relation_mksymdzw')?.display_value || '';
-    
+    const relationDescription =
+      columnValues.find((col) => col.id === "board_relation_mksymdzw")
+        ?.display_value || "";
+
     // Use board_relation_mksymdzw display_value if it exists, otherwise use subitem.name
     if (relationDescription.trim()) {
       description = relationDescription;
     } else {
-      description = subitem.name || 'פריט';
+      description = subitem.name || "פריט";
     }
 
     // Process each column value
     columnValues.forEach((column) => {
-      const columnId = column.id || '';
-      const displayValue = column.display_value || '';
-      const textValue = column.text || '';
-      const columnTitle = column.column?.title?.toLowerCase() || '';
+      const columnId = column.id || "";
+      const displayValue = column.display_value || "";
+      const textValue = column.text || "";
+      const columnTitle = column.column?.title?.toLowerCase() || "";
 
       // Determine status for categorization
-      if (columnId === 'color_mkszp4jg') {
+      if (columnId === "color_mkszp4jg") {
         status = textValue || displayValue;
       }
 
       // Handle subtitle (description column)
-      if (columnId === 'long_text_mksy9egc' || columnTitle.includes('description')) {
+      if (
+        columnId === "long_text_mksy9egc" ||
+        columnTitle.includes("description")
+      ) {
         subtitle = displayValue || textValue || subtitle;
       }
 
       // Handle unit measure with lookup priority
-      if (columnTitle.includes('unit') || columnTitle.includes('מידה')) {
-        if (columnId.includes('lookup')) {
+      if (columnTitle.includes("unit") || columnTitle.includes("מידה")) {
+        if (columnId.includes("lookup")) {
           unit = displayValue || textValue || unit;
         } else {
           unit = displayValue || textValue || unit;
@@ -673,13 +743,16 @@ const processApiData = (apiResponse) => {
       }
 
       // Handle quantity
-      if (columnId === 'numeric_mksyftx0' || columnTitle.includes('quantity')) {
+      if (columnId === "numeric_mksyftx0" || columnTitle.includes("quantity")) {
         quantity = textValue || displayValue || quantity;
       }
 
       // Handle unit price with lookup priority
-      if (columnTitle.includes('unit price') || columnTitle.includes('מחיר יח')) {
-        if (columnId.includes('lookup')) {
+      if (
+        columnTitle.includes("unit price") ||
+        columnTitle.includes("מחיר יח")
+      ) {
+        if (columnId.includes("lookup")) {
           unitPrice = displayValue || textValue || unitPrice;
         } else {
           unitPrice = textValue || displayValue || unitPrice;
@@ -687,7 +760,11 @@ const processApiData = (apiResponse) => {
       }
 
       // Handle total price
-      if (columnId === 'formula_mksy3sr8' || columnTitle.includes('total') || columnTitle.includes('סה"כ')) {
+      if (
+        columnId === "formula_mksy3sr8" ||
+        columnTitle.includes("total") ||
+        columnTitle.includes('סה"כ')
+      ) {
         totalPrice = textValue || displayValue || totalPrice;
       }
     });
@@ -706,12 +783,15 @@ const processApiData = (apiResponse) => {
       subtitle,
       unit,
       quantity,
-      unitPrice: unitPrice || '0',
-      totalPrice: totalPrice || unitPrice || '0'
+      unitPrice: unitPrice || "0",
+      totalPrice: totalPrice || unitPrice || "0",
     };
 
     // Categorize based on status
-    if (status.toLowerCase().includes('recurring') || status.toLowerCase().includes('חוזר')) {
+    if (
+      status.toLowerCase().includes("recurring") ||
+      status.toLowerCase().includes("חוזר")
+    ) {
       recurringItems.push(processedItem);
     } else {
       oneTimeItems.push(processedItem);
@@ -722,7 +802,7 @@ const processApiData = (apiResponse) => {
 };
 
 // Main Invoice Component
-const Invoice = ({mode, setMode}) => {
+const Invoice = ({ mode, setMode }) => {
   const [recurringItems, setRecurringItems] = React.useState([]);
   const [oneTimeItems, setOneTimeItems] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
@@ -739,13 +819,13 @@ const Invoice = ({mode, setMode}) => {
     setLoading(true);
     import("./monday").then(({ getSubitemsByItemId }) => {
       getSubitemsByItemId(itemId)
-        .then(response => {
+        .then((response) => {
           console.log("Monday.com API response:", response);
           const { recurringItems, oneTimeItems } = processApiData(response);
           setRecurringItems(recurringItems);
           setOneTimeItems(oneTimeItems);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error fetching subitems:", error);
           setError(error.message);
         })
@@ -756,10 +836,7 @@ const Invoice = ({mode, setMode}) => {
   }, [itemId]);
 
   if (loading) {
-    return (
-      <>
-      </>
-    );
+    return <></>;
   }
 
   if (error) {
@@ -773,22 +850,37 @@ const Invoice = ({mode, setMode}) => {
   }
 
   return (
-    <div className={`min-h-screen ${mode === "dark" ? "bg-[#042140]" : "bg-white"}`} dir="rtl">
+    <div
+      className={`min-h-screen ${
+        mode === "dark" ? "bg-[#042140]" : "bg-white"
+      }`}
+      dir="rtl"
+    >
       <Header mode={mode} setMode={setMode} />
       <div className="px-3 max-w-[1200px] mx-auto">
         <CompanyInfo mode={mode} />
         <hr className="bg-gray-500 h-[0.5px] border-0" />
         <InvoiceHeader mode={mode} />
         {recurringItems.length > 0 && (
-          <PricingTable title="תשלום חודשי קבוע" mode={mode} items={recurringItems} showDownload={true} />
+          <PricingTable
+            title="תשלום חודשי קבוע"
+            mode={mode}
+            items={recurringItems}
+            showDownload={true}
+          />
         )}
         {oneTimeItems.length > 0 && (
-          <PricingTable title="תשלום חד פעמי" mode={mode} items={oneTimeItems} showDownload={false} />
+          <PricingTable
+            title="תשלום חד פעמי"
+            mode={mode}
+            items={oneTimeItems}
+            showDownload={false}
+          />
         )}
         <Footer mode={mode} />
       </div>
     </div>
   );
-}
+};
 
 export default Invoice;
