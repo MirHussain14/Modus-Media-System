@@ -299,32 +299,48 @@ const TableRow = ({
     <>
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
+          {/* Blurred overlay */}
           <div
-            className="absolute inset-0 bg-white bg-opacity-[1%]"
+            className="absolute inset-0 w-full h-full"
+            style={{
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              background:
+                mode === 'dark'
+                  ? 'rgba(4, 33, 64, 0.50)'
+                  : 'rgba(255,255,255,0.50)',
+              zIndex: 0,
+            }}
             onClick={() => setShowPopup(false)}
-            style={{ backdropFilter: "blur(2px)" }}
-          ></div>
-
+          />
           {/* Popup */}
           <div
-            className="relative z-10 bg-white rounded-3xl py-8 px-4 h-[400px] mx-auto w-[300px]"
+            className="relative z-10 rounded-3xl py-12 pe-2 ps-8 mx-auto w-[400px]"
             style={{
-              border: "1px solid #1E9BF0",
-              boxShadow: "0 8px 10px rgba(0,0,0,0.12)",
-            }}x
+              boxShadow: '0 8px 10px rgba(0,0,0,0.12)',
+              background: mode === 'dark'
+                ? 'linear-gradient(#042140, #042140) padding-box, linear-gradient(90deg, rgba(5,172,252,0.4) 0%, rgba(5,71,172,0.4) 50%, rgba(2,230,219,0.4) 100%) border-box'
+                : 'linear-gradient(#fff, #fff) padding-box, linear-gradient(90deg, rgba(5,172,252,0.4) 0%, rgba(5,71,172,0.4) 50%, rgba(2,230,219,0.4) 100%) border-box',
+              border: '2px solid transparent',
+            }}
           >
             {/* Close button */}
             <button
-              className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center transition-colors text-2xl p-3 rounded-full cursor-pointer bg-black text-white"
+              className={`absolute top-4 right-4 flex items-center justify-center transition-colors rounded-full cursor-pointer w-8 h-8
+                ${mode === 'dark' ? 'bg-[#031428] text-white' : 'bg-gray-300 text-[#042140]'}
+              `}
               onClick={() => setShowPopup(false)}
             >
-              X
+              <IoIosClose className="w-7 h-7 font-bold" />
             </button>
 
             {/* Content */}
-            <p className="text-right w-full mt-4" dir="rtl">
-                {subtitle}
+            <p
+              className={`text-right w-full mt-4 ${mode === 'dark' ? 'text-white' : 'text-black'}`}
+              dir="rtl"
+            >
+              <span className="text-3xl my-2 block">{description} :</span>
+              {subtitle}
             </p>
           </div>
         </div>
@@ -398,6 +414,7 @@ const TableRow = ({
 
 import domtoimage from "dom-to-image";
 import jsPDF from "jspdf";
+import { IoIosClose } from "react-icons/io";
 
 const PricingTable = ({ title, mode, items = [], showDownload = false }) => {
   // Calculate total price
