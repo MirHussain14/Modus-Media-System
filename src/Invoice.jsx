@@ -1,5 +1,9 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useLocation } from "react-router-dom";
+import domtoimage from "dom-to-image";
+import jsPDF from "jspdf";
+import { IoIosClose } from "react-icons/io";
+import { uploadAndLinkToMonday } from "./dropbox"; // Import your dropbox function
 
 // Header Component
 const Header = ({ mode, setMode }) => {
@@ -412,54 +416,12 @@ const TableRow = ({
   );
 };
 
-import domtoimage from "dom-to-image";
-import jsPDF from "jspdf";
-import { IoIosClose } from "react-icons/io";
-
-const PricingTable = ({ title, mode, items = [], showDownload = false }) => {
+const PricingTable = ({ title, mode, items = [], showDownload = false, onDownloadClick }) => {
   // Calculate total price
   const totalPrice = items.reduce((sum, item) => {
     const price = parseFloat(item.totalPrice) || 0;
     return sum + price;
   }, 0);
-
-  // PDF download handler
-  const handleDownloadPDF = async () => {
-    const pdfDiv = document.querySelector(".PDF");
-    if (!pdfDiv) {
-      alert("לא נמצא אזור להורדת PDF");
-      return;
-    }
-    // Save original opacity style
-    const originalOpacity = pdfDiv.style.opacity;
-    pdfDiv.style.opacity = "1";
-    try {
-      // Get the size of the .PDF element
-      const rect = pdfDiv.getBoundingClientRect();
-      const divWidthPx = rect.width;
-      const divHeightPx = rect.height;
-      // Convert px to pt (1pt = 1.333px)
-      const pxToPt = 0.75;
-      const pdfWidth = divWidthPx * pxToPt;
-      const pdfHeight = divHeightPx * pxToPt;
-      // Convert the div to PNG
-      const pngDataUrl = await domtoimage.toPng(pdfDiv);
-      // Create a new jsPDF instance with custom size
-      const pdf = new jsPDF({
-        orientation: "p",
-        unit: "pt",
-        format: [pdfWidth, pdfHeight],
-      });
-      // Add the image to the PDF, filling the page
-      pdf.addImage(pngDataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save("invoice.pdf");
-    } catch (err) {
-      alert("שגיאה ביצירת PDF: " + err.message);
-    } finally {
-      // Restore original opacity
-      pdfDiv.style.opacity = originalOpacity;
-    }
-  };
 
   return (
     <>
@@ -522,7 +484,7 @@ const PricingTable = ({ title, mode, items = [], showDownload = false }) => {
                     }
                   : {}
               }
-              onClick={handleDownloadPDF}
+              onClick={onDownloadClick}
               type="button"
             >
               <img
@@ -697,8 +659,13 @@ const Footer = ({ mode }) => {
   );
 };
 
-// Data processing function
+// Helper function to get query parameters
+function getQueryParam(param) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param);
+}
 
+// Data processing function
 const processApiData = (apiResponse) => {
   if (!apiResponse?.data?.items?.[0]?.subitems) {
     return { recurringItems: [], oneTimeItems: [] };
@@ -824,11 +791,156 @@ const Invoice = ({ mode, setMode }) => {
   const [oneTimeItems, setOneTimeItems] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  const [pdfFile, setPdfFile] = React.useState(null); // Store the generated PDF file
+  const [pdfGenerating, setPdfGenerating] = React.useState(false);
+  const [pdfGenerated, setPdfGenerated] = React.useState(false);
+  const pdfGeneratedRef = useRef(false);
+  const [showToast, setShowToast] = React.useState(false);
+  const [toastMessage, setToastMessage] = React.useState("");
+  const [mondayData, setMondayData] = React.useState([]);
+  
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const itemId = searchParams.get("id");
 
+  // Generate PDF function
+  const generatePDF = React.useCallback(async (mondayResponse) => {
+    if (pdfGeneratedRef.current) return;
+    pdfGeneratedRef.current = true;
+    setPdfGenerating(true);
+    setShowToast(true);
+    setToastMessage("📄 Generating PDF...");
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const mainWrapper = document.querySelector(".PDF") || document.querySelector("body");
+      if (!mainWrapper) {
+        console.error("Main wrapper not found");
+        setShowToast(true);
+        setToastMessage("❌ PDF generation failed");
+        setTimeout(() => setShowToast(false), 3000);
+        return;
+      }
+      const options = {
+        quality: 1,
+        width: mainWrapper.scrollWidth,
+        height: mainWrapper.scrollHeight,
+        style: {
+          transform: `scale(1)`,
+          "transform-origin": "top center",
+          "box-shadow": "none",
+          opacity: "100%",
+          display: "block",
+          top: "none",
+          left: "none",
+        }
+      };
+      const svgDataUrl = await domtoimage.toSvg(mainWrapper, options);
+      const img = new window.Image();
+      img.src = svgDataUrl;
+      img.onload = async function () {
+        try {
+          const imgWidth = img.naturalWidth;
+          const imgHeight = img.naturalHeight;
+          const a4Width = 210;
+          const scaleX = a4Width / (imgWidth * 0.264583);
+          const finalWidth = a4Width;
+          const finalHeight = imgHeight * 0.264583 * scaleX;
+          const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: [a4Width, finalHeight],
+          });
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          const canvasScale = 2;
+          canvas.width = imgWidth * canvasScale;
+          canvas.height = imgHeight * canvasScale;
+          ctx.scale(canvasScale, canvasScale);
+          ctx.fillStyle = "white";
+          ctx.fillRect(0, 0, imgWidth, imgHeight);
+          ctx.drawImage(img, 0, 0);
+          const pngDataUrl = canvas.toDataURL("image/png", 1.0);
+          pdf.addImage(pngDataUrl, "PNG", 0, 0, finalWidth, finalHeight);
+          const pdfBlob = pdf.output("blob");
+          let subitemName = "";
+          if (mondayResponse && mondayResponse.data?.items?.[0]?.name) {
+            subitemName = mondayResponse.data.items[0].name;
+          } else if (mondayResponse && mondayResponse.length > 0 && mondayResponse[0].name) {
+            subitemName = mondayResponse[0].name;
+          }
+          const d = new Date();
+          const day = String(d.getDate()).padStart(2, "0");
+          const month = String(d.getMonth() + 1).padStart(2, "0");
+          const year = d.getFullYear();
+          const hours = String(d.getHours()).padStart(2, "0");
+          const minutes = String(d.getMinutes()).padStart(2, "0");
+          const seconds = String(d.getSeconds()).padStart(2, "0");
+          const dateStr = `${day}.${month}.${year}`;
+          const timeStr = `${hours}.${minutes}.${seconds}`;
+          // Hebrew: מודוס מדיה הַצָעָה itemName date.time.pdf
+          const fileName = `מודוס מדיה הַצָעָה ${subitemName} ${dateStr}.${timeStr}.pdf`;
+          const file = new File([pdfBlob], fileName, {
+            type: "application/pdf",
+          });
+          setPdfFile(file);
+          setPdfGenerated(true);
+          setPdfGenerating(false);
+          setShowToast(true);
+          setToastMessage("✅ PDF ready for download");
+          setTimeout(() => setShowToast(false), 3000);
+          try {
+            const mondayItemId = getQueryParam("id") || 9542442798;
+            const dropboxTargetPath = `/Shiran Tal/Modus/הצעות מחיר/${fileName}`;
+            await uploadAndLinkToMonday(file, dropboxTargetPath, mondayItemId);
+          } catch (uploadError) {
+            console.error("Error uploading to Dropbox:", uploadError);
+          }
+        } catch (pdfError) {
+          console.error("Error in PDF generation process:", pdfError);
+          setPdfGenerating(false);
+          setShowToast(true);
+          setToastMessage("❌ PDF generation failed");
+          setTimeout(() => setShowToast(false), 3000);
+        }
+      };
+      img.onerror = function() {
+        console.error("Error loading image for PDF generation");
+        setPdfGenerating(false);
+        setShowToast(true);
+        setToastMessage("❌ PDF generation failed");
+        setTimeout(() => setShowToast(false), 3000);
+      };
+    } catch (err) {
+      console.error("Error generating PDF:", err);
+      setPdfGenerating(false);
+      setShowToast(true);
+      setToastMessage("❌ PDF generation failed");
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  }, []);
+
+  // Download function - uses the stored PDF
+  const downloadPDF = React.useCallback(() => {
+    if (!pdfFile) {
+      console.error("No PDF file available for download");
+      return;
+    }
+
+    // Create download link
+    const url = URL.createObjectURL(pdfFile);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = pdfFile.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    console.log("✅ PDF downloaded:", pdfFile.name);
+  }, [pdfFile]);
+
   React.useEffect(() => {
+    let isMounted = true;
     if (!itemId) {
       setLoading(false);
       return;
@@ -837,24 +949,28 @@ const Invoice = ({ mode, setMode }) => {
     import("./monday").then(({ getSubitemsByItemId }) => {
       getSubitemsByItemId(itemId)
         .then((response) => {
+          if (!isMounted) return;
           console.log("Monday.com API response:", response);
           const { recurringItems, oneTimeItems } = processApiData(response);
           setRecurringItems(recurringItems);
           setOneTimeItems(oneTimeItems);
+          setMondayData(response);
+          setTimeout(() => {
+            generatePDF(response);
+          }, 3000);
         })
         .catch((error) => {
+          if (!isMounted) return;
           console.error("Error fetching subitems:", error);
           setError(error.message);
         })
         .finally(() => {
+          if (!isMounted) return;
           setLoading(false);
         });
     });
+    return () => { isMounted = false; };
   }, [itemId]);
-
-  if (loading) {
-    return <></>;
-  }
 
   if (error) {
     return (
@@ -868,7 +984,7 @@ const Invoice = ({ mode, setMode }) => {
 
   return (
     <div
-      className={`min-h-screen ${
+      className={`min-h-screen bundlewith ${
         mode === "dark" ? "bg-[#042140]" : "bg-white"
       }`}
       dir="rtl"
@@ -884,6 +1000,7 @@ const Invoice = ({ mode, setMode }) => {
             mode={mode}
             items={recurringItems}
             showDownload={true}
+            onDownloadClick={downloadPDF}
           />
         )}
         {oneTimeItems.length > 0 && (
@@ -895,6 +1012,13 @@ const Invoice = ({ mode, setMode }) => {
           />
         )}
         <Footer mode={mode} />
+        
+        {/* Toast Notification for PDF Status */}
+        {showToast && (
+          <div className="fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-fade-in-out" style={{minWidth:'180px',textAlign:'center'}}>
+            {toastMessage}
+          </div>
+        )}
       </div>
     </div>
   );
