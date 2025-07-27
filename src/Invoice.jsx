@@ -877,9 +877,14 @@ const Invoice = ({ mode, setMode }) => {
           const seconds = String(d.getSeconds()).padStart(2, "0");
           const dateStr = `${day}.${month}.${year}`;
           const timeStr = `${hours}.${minutes}.${seconds}`;
-          // Hebrew: מודוס מדיה הַצָעָה itemName date.time.pdf
-          const fileName = `מודוס מדיה הַצָעָה ${subitemName} ${dateStr}.${timeStr}.pdf`;
-          const file = new File([pdfBlob], fileName, {
+          // Hebrew: מודוס מדיה הַצָעָה itemName date.time.pdf, RTL enforced
+          //  is the Left-to-Right Mark,  is Right-to-Left Mark, but for filenames, use \u202B (RLE) and \u202C (PDF) to wrap RTL text
+          const rtlStart = '\u202B'; // RLE (Right-to-Left Embedding)
+          const rtlEnd = '\u202C';   // PDF (Pop Directional Formatting)
+          const fileName = `\u202Bמודוס מדיה הַצָעָה ${subitemName} ${dateStr}.${timeStr}\u202C.pdf`;
+          // Actually insert the unicode characters:
+          const fileNameRTL = `${String.fromCharCode(0x202B)}מודוס מדיה הַצָעָה ${subitemName} ${dateStr}.${timeStr}${String.fromCharCode(0x202C)}.pdf`;
+          const file = new File([pdfBlob], fileNameRTL, {
             type: "application/pdf",
           });
           setPdfFile(file);
