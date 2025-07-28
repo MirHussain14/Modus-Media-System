@@ -791,7 +791,7 @@ const Invoice = ({ mode, setMode }) => {
   const [oneTimeItems, setOneTimeItems] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
-  const [pdfFile, setPdfFile] = React.useState(null); // Store the generated PDF file
+  const [pdfFile, setPdfFile] = React.useState(null);
   const [pdfGenerating, setPdfGenerating] = React.useState(false);
   const [pdfGenerated, setPdfGenerated] = React.useState(false);
   const pdfGeneratedRef = useRef(false);
@@ -803,120 +803,87 @@ const Invoice = ({ mode, setMode }) => {
   const searchParams = new URLSearchParams(location.search);
   const itemId = searchParams.get("id");
 
-  // Generate PDF function
+  // Simplified PDF generation using dom-to-image
   const generatePDF = React.useCallback(async (mondayResponse) => {
     if (pdfGeneratedRef.current) return;
     pdfGeneratedRef.current = true;
     setPdfGenerating(true);
     setShowToast(true);
     setToastMessage("📄 Generating PDF...");
+    
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
-      const mainWrapper = document.querySelector(".PDF") || document.querySelector("body");
-      if (!mainWrapper) {
-        console.error("Main wrapper not found");
-        setShowToast(true);
-        setToastMessage("❌ PDF generation failed");
-        setTimeout(() => setShowToast(false), 3000);
-        return;
+      
+      // Get the element to capture
+      const element = document.querySelector(".PDF") || document.querySelector("body");
+      if (!element) {
+        throw new Error("Element not found");
       }
-      const options = {
+      
+      // Convert DOM element directly to PNG
+      const pngDataUrl = await domtoimage.toPng(element, {
         quality: 1,
-        width: mainWrapper.scrollWidth,
-        height: mainWrapper.scrollHeight,
         style: {
-          transform: `scale(1)`,
-          "transform-origin": "top center",
-          "box-shadow": "none",
-          opacity: "100%",
-          display: "block",
-          top: "none",
-          left: "none",
+          'box-shadow': 'none'
         }
-      };
-      const svgDataUrl = await domtoimage.toSvg(mainWrapper, options);
-      const img = new window.Image();
-      img.src = svgDataUrl;
-      img.onload = async function () {
-        try {
-          const imgWidth = img.naturalWidth;
-          const imgHeight = img.naturalHeight;
-          const a4Width = 210;
-          const scaleX = a4Width / (imgWidth * 0.264583);
-          const finalWidth = a4Width;
-          const finalHeight = imgHeight * 0.264583 * scaleX;
-          const pdf = new jsPDF({
-            orientation: "portrait",
-            unit: "mm",
-            format: [a4Width, finalHeight],
-          });
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
-          const canvasScale = 2;
-          canvas.width = imgWidth * canvasScale;
-          canvas.height = imgHeight * canvasScale;
-          ctx.scale(canvasScale, canvasScale);
-          ctx.fillStyle = "white";
-          ctx.fillRect(0, 0, imgWidth, imgHeight);
-          ctx.drawImage(img, 0, 0);
-          const pngDataUrl = canvas.toDataURL("image/png", 1.0);
-          pdf.addImage(pngDataUrl, "PNG", 0, 0, finalWidth, finalHeight);
-          const pdfBlob = pdf.output("blob");
-          let subitemName = "";
-          if (mondayResponse && mondayResponse.data?.items?.[0]?.name) {
-            subitemName = mondayResponse.data.items[0].name;
-          } else if (mondayResponse && mondayResponse.length > 0 && mondayResponse[0].name) {
-            subitemName = mondayResponse[0].name;
-          }
-          const d = new Date();
-          const day = String(d.getDate()).padStart(2, "0");
-          const month = String(d.getMonth() + 1).padStart(2, "0");
-          const year = d.getFullYear();
-          const hours = String(d.getHours()).padStart(2, "0");
-          const minutes = String(d.getMinutes()).padStart(2, "0");
-          const seconds = String(d.getSeconds()).padStart(2, "0");
-          const dateStr = `${day}.${month}.${year}`;
-          const timeStr = `${hours}.${minutes}.${seconds}`;
-          // Hebrew: מודוס מדיה הַצָעָה itemName date.time.pdf, RTL enforced
-          //  is the Left-to-Right Mark,  is Right-to-Left Mark, but for filenames, use \u202B (RLE) and \u202C (PDF) to wrap RTL text
-          const rtlStart = '\u202B'; // RLE (Right-to-Left Embedding)
-          const rtlEnd = '\u202C';   // PDF (Pop Directional Formatting)
-          const fileName = `\u202Bמודוס מדיה הַצָעָה ${subitemName} ${dateStr}.${timeStr}\u202C.pdf`;
-          // Actually insert the unicode characters:
-          const fileNameRTL = `${String.fromCharCode(0x202B)}מודוס מדיה הַצָעָה ${subitemName} ${dateStr}.${timeStr}${String.fromCharCode(0x202C)}.pdf`;
-          const file = new File([pdfBlob], fileNameRTL, {
-            type: "application/pdf",
-          });
-          setPdfFile(file);
-          setPdfGenerated(true);
-          setPdfGenerating(false);
-          setShowToast(true);
-          setToastMessage("✅ PDF ready for download");
-          setTimeout(() => setShowToast(false), 3000);
-          try {
-            const mondayItemId = getQueryParam("id") || 9542442798;
-            const dropboxTargetPath = `/Shiran Tal/Modus/הצעות מחיר/${fileName}`;
-            await uploadAndLinkToMonday(file, dropboxTargetPath, mondayItemId);
-          } catch (uploadError) {
-            console.error("Error uploading to Dropbox:", uploadError);
-          }
-        } catch (pdfError) {
-          console.error("Error in PDF generation process:", pdfError);
-          setPdfGenerating(false);
-          setShowToast(true);
-          setToastMessage("❌ PDF generation failed");
-          setTimeout(() => setShowToast(false), 3000);
-        }
-      };
-      img.onerror = function() {
-        console.error("Error loading image for PDF generation");
-        setPdfGenerating(false);
-        setShowToast(true);
-        setToastMessage("❌ PDF generation failed");
-        setTimeout(() => setShowToast(false), 3000);
-      };
-    } catch (err) {
-      console.error("Error generating PDF:", err);
+      });
+      
+      // Get actual element dimensions
+      const elementWidth = element.scrollWidth;
+      const elementHeight = element.scrollHeight;
+      
+      // Convert pixels to mm (96 DPI to mm conversion: 1px = 0.264583mm)
+      const pdfWidth = elementWidth * 0.264583;
+      const pdfHeight = elementHeight * 0.264583;
+      
+      // Create PDF with dynamic height based on content
+      const pdf = new jsPDF('p', 'mm', [pdfWidth, pdfHeight]);
+      pdf.addImage(pngDataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      
+      // Generate filename according to convention
+      let subitemName = "";
+      let itemIdForName = getQueryParam("id") || "";
+      if (mondayResponse?.data?.items?.[0]?.name) {
+        subitemName = mondayResponse.data.items[0].name;
+      } else if (mondayResponse?.[0]?.name) {
+        subitemName = mondayResponse[0].name;
+      }
+
+      // Use itemId from query param, fallback to 455 if not found
+      const itemIdStr = itemIdForName ? itemIdForName : "455";
+
+      // Format date as DD.MM.YYYY
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      const dateStr = `${day}.${month}.${year}`;
+
+      // Final file name
+      const fileName = `מודוס מערכות - הצעת מחיר #${itemIdStr} ${subitemName} ${dateStr}.pdf`;
+
+      // Create file
+      const pdfBlob = pdf.output("blob");
+      const file = new File([pdfBlob], fileName, { type: "application/pdf" });
+      
+      setPdfFile(file);
+      setPdfGenerated(true);
+      setPdfGenerating(false);
+      setShowToast(true);
+      setToastMessage("✅ PDF ready for download");
+      setTimeout(() => setShowToast(false), 3000);
+      
+      // Upload to Dropbox/Monday if needed
+      try {
+        const mondayItemId = getQueryParam("id") || 9542442798;
+        const dropboxTargetPath = `/Shiran Tal/Modus/הצעות מחיר/${fileName}`;
+        await uploadAndLinkToMonday(file, dropboxTargetPath, mondayItemId);
+      } catch (uploadError) {
+        console.error("Upload error:", uploadError);
+      }
+      
+    } catch (error) {
+      console.error("PDF generation failed:", error);
       setPdfGenerating(false);
       setShowToast(true);
       setToastMessage("❌ PDF generation failed");
