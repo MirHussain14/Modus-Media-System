@@ -146,13 +146,6 @@ const TableHeaderPDF = ({ mode }) => {
             mode === "dark" ? "text-white" : "text-[#042140]"
           } flex-1`}
         >
-          יח' מידה
-        </div>
-        <div
-          className={`text-center text-2xl opacity-[80%] ${
-            mode === "dark" ? "text-white" : "text-[#042140]"
-          } flex-1`}
-        >
           כמות
         </div>
         <div
@@ -231,13 +224,6 @@ const TableRowPDF = ({
               {subtitle}
             </div>
           )}
-        </div>
-        <div
-          className={`text-center text-2xl ${
-            mode === "dark" ? "text-white" : "text-gray-700"
-          } flex-1`}
-        >
-          {unit || "יח'"}
         </div>
         <div
           className={`text-center text-2xl ${

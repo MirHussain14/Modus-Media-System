@@ -225,13 +225,6 @@ const TableHeader = ({ mode }) => {
           תיאור
         </div>
         <div
-          className={`md:text-center hidden md:block text-xs md:opacity-[80%] ${
-            mode === "dark" ? "text-white" : "text-[#042140]"
-          } md:text-2xl flex-1`}
-        >
-          יח' מידה
-        </div>
-        <div
           className={`md:text-center text-xs md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
           } md:text-2xl flex-1`}
@@ -381,13 +374,6 @@ const TableRow = ({
                 )}
               </div>
             )}
-          </div>
-          <div
-            className={`text-center text-xs hidden md:block md:text-2xl ${
-              mode === "dark" ? "text-white" : "text-gray-700"
-            } flex-1`}
-          >
-            {unit || "יח'"}
           </div>
           <div
             className={`text-center text-xs md:text-2xl ${
@@ -840,28 +826,20 @@ const Invoice = ({ mode, setMode }) => {
       const pdf = new jsPDF('p', 'mm', [pdfWidth, pdfHeight]);
       pdf.addImage(pngDataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
       
-      // Generate filename according to convention
+      // Generate filename
       let subitemName = "";
-      let itemIdForName = getQueryParam("id") || "";
       if (mondayResponse?.data?.items?.[0]?.name) {
         subitemName = mondayResponse.data.items[0].name;
       } else if (mondayResponse?.[0]?.name) {
         subitemName = mondayResponse[0].name;
       }
-
-      // Use itemId from query param, fallback to 455 if not found
-      const itemIdStr = itemIdForName ? itemIdForName : "455";
-
-      // Format date as DD.MM.YYYY
+      
       const now = new Date();
-      const day = String(now.getDate()).padStart(2, '0');
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const year = now.getFullYear();
-      const dateStr = `${day}.${month}.${year}`;
-
-      // Final file name
-      const fileName = `מודוס מערכות - הצעת מחיר #${itemIdStr} ${subitemName} ${dateStr}.pdf`;
-
+      const dateStr = now.toLocaleDateString('he-IL').replace(/\//g, '.');
+      const timeStr = now.toLocaleTimeString('he-IL', {hour12: false}).replace(/:/g, '.');
+      
+      const fileName = `מודוס מדיה הצעה ${subitemName} ${dateStr}.${timeStr}.pdf`;
+      
       // Create file
       const pdfBlob = pdf.output("blob");
       const file = new File([pdfBlob], fileName, { type: "application/pdf" });
@@ -875,9 +853,10 @@ const Invoice = ({ mode, setMode }) => {
       
       // Upload to Dropbox/Monday if needed
       try {
-        const mondayItemId = getQueryParam("id") || 9542442798;
+        const fullMondayItemId = getQueryParam("id") || 9542442798;
+        const shortId = fullMondayItemId % 1000; // Get last 3 digits
         const dropboxTargetPath = `/Shiran Tal/Modus/הצעות מחיר/${fileName}`;
-        await uploadAndLinkToMonday(file, dropboxTargetPath, mondayItemId);
+        await uploadAndLinkToMonday(file, dropboxTargetPath, shortId);
       } catch (uploadError) {
         console.error("Upload error:", uploadError);
       }
