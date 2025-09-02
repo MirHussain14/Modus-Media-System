@@ -12,7 +12,7 @@ const Header = ({ mode, setMode }) => {
       className="text-white px-4 py-6 md:px-8 md:py-8 relative"
       style={{ background: "linear-gradient(90deg, #062D57 0%, #031327 100%)" }}
     >
-      <div dir="ltr" className="flex items-center space-x-8 md:px-70">
+      <div dir="ltr" className="flex items-center space-x-8 px-20 md:absolute md:px-0 md:left-[20%]">
         <button
           className={`cursor-pointer text-xs flex flex-col gap-1 items-center focus:outline-none ${
             mode === "light" ? "underline underline-offset-4" : ""
