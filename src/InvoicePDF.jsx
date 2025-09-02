@@ -44,7 +44,7 @@ const CompanyInfoPDF = ({ mode }) => {
         <div
           className={`flex justify-between items-center ${
             mode === "dark" ? "text-white" : "text-gray-600"
-          } text-2xl`}
+          } text-xl`}
         >
           <div className="flex-1">ניהול רשתות</div>
           <div className="text-center flex-1 border-r border-gray-400 px-4">
@@ -65,7 +65,7 @@ const CompanyInfoPDF = ({ mode }) => {
         <div
           className={`flex justify-between items-center ${
             mode === "dark" ? "text-white" : "text-gray-600"
-          } text-2xl`}
+          } text-xl`}
         >
           <div className="flex items-center gap-2 flex-1">
             <img src="/Home.png" alt="" />
@@ -132,7 +132,7 @@ const InvoiceHeaderPDF = ({ mode }) => {
 // TableHeaderPDF Component
 const TableHeaderPDF = ({ mode }) => {
   return (
-    <div className="px-6">
+    <div className="px-10">
       <div className="flex justify-between gap-4 px-6 font-medium">
         <div
           className={`text-2xl opacity-[80%] ${
@@ -193,7 +193,7 @@ const TableRowPDF = ({
           <div className="flex-1"></div>
           <div className="flex-1"></div>
           <div
-            className={`text-center font-bold ${
+            className={`text-left font-bold ${
               mode === "dark" ? "text-white" : " text-gradient"
             } text-2xl flex-1`}
           >
@@ -240,7 +240,7 @@ const TableRowPDF = ({
           {unitPrice} ₪
         </div>
         <div
-          className={`text-center text-2xl font-medium ${
+          className={`text-left text-2xl font-medium ${
             mode === "dark" ? "text-white" : "text-gray-800"
           } flex-1`}
         >
@@ -364,7 +364,7 @@ const FooterPDF = ({ mode }) => {
               mode === "dark" ? "text-white" : "text-black"
             }`}
           >
-            הדין רמא של פתרונות
+            הדור הבא של פתרונות{" "}
           </h1>
           <h2
             className={`text-6xl ${
@@ -385,7 +385,7 @@ const FooterPDF = ({ mode }) => {
               mode === "dark" ? "text-white" : "text-black"
             }`}
           >
-            תחת קרית נט אחות
+            תחת קורת גג אחת{" "}
           </p>
         </div>
         <div className="left w-[40%] flex flex-col items-center">
@@ -418,25 +418,27 @@ const FooterPDF = ({ mode }) => {
               mode === "dark" ? "text-white" : "text-[#042140]"
             } mb-4`}
           >
-            מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום התקשורת, מתח נמוך
-            ומולטימדיה. בשנתיים האחרונות הקמנו מחלקת מחשוב עם התמחות בפתרונות
-            תקשורת מתקדמים והכל תחת קורת גג אחת.
+            מאז שנת 2013 העמקנו בעולם התקשורת לעסקים, הבנו את הפער בהיצע מול
+            הביקוש, פיצחנו את הצרכים הייחודיים והתאמנו פתרון כולל המאפשר לנו תחת
+            קורת גג אחת להקים ולתפעל את כלל הצרכים בתחום התקשורת לחברות ועסקים. 
           </p>
           <p
             className={`text-justify text-base leading-5 ${
               mode === "dark" ? "text-white" : "text-[#042140]"
             } mb-4`}
           >
-            אנחנו מציעים חלופה מתקדמת ששמה את הלקוח במרכז. מעמידים ללקוחות שלנו
-            מרכז שירות ותמיכה מתקדמים עם היענות גבוהה מסביב לשעון .
+            לתת אלטרנטיבה שפויה ששמה את הלקוח במרכז בעולם התקשורת העסקית. אנחנו
+            בוחרים מידי יום להתנהל בצורה שתתמוך בלקוחות שלנו ומבינה את הלחצים
+            בהם הם מתנהלים. 
           </p>
           <p
             className={`text-justify text-base leading-5 ${
               mode === "dark" ? "text-white" : "text-[#042140]"
             } mb-4`}
           >
-            נמשיך לפתח מוצרים וממשקים "אין האוס" כחול-לבן, כדיי להוביל את השוק
-            לצד לקוחותינו , בחוד החנית הטכנולוגית.
+            חדשנות טכנולוגית היא ביטוי המפתח. אנחנו מפתחים פתרונות תוכנה שיקלו
+            על הלקוח, בונים גשרים על ידי פיתוח ממשקים ודואגים לספק פתרונות
+            יצירתיים וחכמים לבעיות היומיות איתן הלקוח מתמודד. 
           </p>
         </div>
       </div>
@@ -569,7 +571,7 @@ const processApiData = (apiResponse) => {
 };
 
 // InvoicePDF Component
-const InvoicePDF = ({mode}) => {
+const InvoicePDF = ({ mode }) => {
   const [recurringItems, setRecurringItems] = useState([]);
   const [oneTimeItems, setOneTimeItems] = useState([]);
   const [loading, setLoading] = useState(true);

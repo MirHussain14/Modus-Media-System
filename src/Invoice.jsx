@@ -33,7 +33,7 @@ const Header = ({ mode, setMode }) => {
         </button>
       </div>
       <div
-        className={`absolute left-5 -bottom-[21%] md:left-30 md:-bottom-[28%] ${
+        className={`absolute left-5 -bottom-[21%] md:left-[20%] md:-bottom-[28%] ${
           mode === "dark" ? "bg-[#042140]" : "bg-white"
         } w-24 h-24 md:w-40 md:h-40 rounded-full flex justify-center items-center`}
       >
@@ -70,7 +70,7 @@ const CompanyInfo = ({ mode }) => {
         <div
           className={`flex justify-between items-center ${
             mode === "dark" ? "text-white" : "text-gray-600"
-          } text-2xl`}
+          } text-xl`}
         >
           <div className="flex-1">ניהול רשתות</div>
           <div className="text-center flex-1 border-r border-gray-400 px-4">
@@ -118,7 +118,7 @@ const CompanyInfo = ({ mode }) => {
         <div
           className={`flex justify-between items-center ${
             mode === "dark" ? "text-white" : "text-gray-600"
-          } text-2xl`}
+          } text-xl`}
         >
           <div className="flex items-center gap-2 flex-1">
             <img src="/Home.png" alt="" />
@@ -126,7 +126,7 @@ const CompanyInfo = ({ mode }) => {
           </div>
           <div className="flex items-center gap-2 flex-1 justify-center px-4">
             <img src="/@.png" alt="" />
-            <span>billing@modusmedia.io</span>
+            <span>billing@modusmedi a.io</span>
           </div>
           <div className="flex items-center gap-2 flex-1 justify-center px-4">
             <img src="/call.png" alt="" />
@@ -215,7 +215,7 @@ const InvoiceHeader = ({ mode }) => {
 
 const TableHeader = ({ mode }) => {
   return (
-    <div className="md:px-6">
+    <div className="md:px-10 ">
       <div className="flex justify-between md:gap-4 px-4 font-medium">
         <div
           className={`text-xs md:opacity-[80%] ${
@@ -239,7 +239,7 @@ const TableHeader = ({ mode }) => {
           מחיר יח'
         </div>
         <div
-          className={`md:text-center text-xs md:opacity-[80%] ${
+          className={`md:text-left text-xs md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
           } md:text-2xl flex-1`}
         >
@@ -275,7 +275,7 @@ const TableRow = ({
           <div className="flex-1"></div>
           <div className="flex-1"></div>
           <div
-            className={`text-center font-bold ${
+            className={`text-left font-bold ${
               mode === "dark" ? "text-white" : " text-gradient"
             } text-xs md:text-2xl md:flex-1`}
           >
@@ -289,7 +289,7 @@ const TableRow = ({
   const [showPopup, setShowPopup] = React.useState(false);
   const isLongSubtitle = subtitle && subtitle.length > 150;
   const truncatedSubtitle = isLongSubtitle
-    ? subtitle.slice(0, 150) + "..."
+    ? subtitle.slice(0, 350) + "..."
     : subtitle;
 
   return (
@@ -300,12 +300,12 @@ const TableRow = ({
           <div
             className="absolute inset-0 w-full h-full"
             style={{
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
               background:
-                mode === 'dark'
-                  ? 'rgba(4, 33, 64, 0.50)'
-                  : 'rgba(255,255,255,0.50)',
+                mode === "dark"
+                  ? "rgba(4, 33, 64, 0.50)"
+                  : "rgba(255,255,255,0.50)",
               zIndex: 0,
             }}
             onClick={() => setShowPopup(false)}
@@ -314,17 +314,22 @@ const TableRow = ({
           <div
             className="relative z-10 rounded-3xl py-12 pe-2 ps-8 mx-auto w-[400px]"
             style={{
-              boxShadow: '0 8px 10px rgba(0,0,0,0.12)',
-              background: mode === 'dark'
-                ? 'linear-gradient(#042140, #042140) padding-box, linear-gradient(90deg, rgba(5,172,252,0.4) 0%, rgba(5,71,172,0.4) 50%, rgba(2,230,219,0.4) 100%) border-box'
-                : 'linear-gradient(#fff, #fff) padding-box, linear-gradient(90deg, rgba(5,172,252,0.4) 0%, rgba(5,71,172,0.4) 50%, rgba(2,230,219,0.4) 100%) border-box',
-              border: '2px solid transparent',
+              boxShadow: "0 8px 10px rgba(0,0,0,0.12)",
+              background:
+                mode === "dark"
+                  ? "linear-gradient(#042140, #042140) padding-box, linear-gradient(90deg, rgba(5,172,252,0.4) 0%, rgba(5,71,172,0.4) 50%, rgba(2,230,219,0.4) 100%) border-box"
+                  : "linear-gradient(#fff, #fff) padding-box, linear-gradient(90deg, rgba(5,172,252,0.4) 0%, rgba(5,71,172,0.4) 50%, rgba(2,230,219,0.4) 100%) border-box",
+              border: "2px solid transparent",
             }}
           >
             {/* Close button */}
             <button
               className={`absolute top-4 right-4 flex items-center justify-center transition-colors rounded-full cursor-pointer w-8 h-8
-                ${mode === 'dark' ? 'bg-[#031428] text-white' : 'bg-gray-300 text-[#042140]'}
+                ${
+                  mode === "dark"
+                    ? "bg-[#031428] text-white"
+                    : "bg-gray-300 text-[#042140]"
+                }
               `}
               onClick={() => setShowPopup(false)}
             >
@@ -333,7 +338,9 @@ const TableRow = ({
 
             {/* Content */}
             <p
-              className={`text-right w-full mt-4 ${mode === 'dark' ? 'text-white' : 'text-black'}`}
+              className={`text-right w-full mt-4 ${
+                mode === "dark" ? "text-white" : "text-black"
+              }`}
               dir="rtl"
             >
               <span className="text-3xl my-2 block">{description} :</span>
@@ -342,8 +349,8 @@ const TableRow = ({
           </div>
         </div>
       )}
-      <div className="md:px-6">
-        <div className="flex justify-between gap-4 px-4 md:px-6 py-2 border-b border-gray-300">
+      <div className="md:px-12">
+        <div className="flex justify-between gap-4 py-2 border-b border-gray-300">
           <div className="text-right flex-3">
             <div
               className={`font-medium text-xs md:text-2xl ${
@@ -390,7 +397,7 @@ const TableRow = ({
             {unitPrice} ₪
           </div>
           <div
-            className={`text-center text-xs md:text-2xl font-medium ${
+            className={`text-left text-xs md:text-2xl font-medium ${
               mode === "dark" ? "text-white" : "text-gray-800"
             } flex-1`}
           >
@@ -402,7 +409,13 @@ const TableRow = ({
   );
 };
 
-const PricingTable = ({ title, mode, items = [], showDownload = false, onDownloadClick }) => {
+const PricingTable = ({
+  title,
+  mode,
+  items = [],
+  showDownload = false,
+  onDownloadClick,
+}) => {
   // Calculate total price
   const totalPrice = items.reduce((sum, item) => {
     const price = parseFloat(item.totalPrice) || 0;
@@ -547,7 +560,7 @@ const Footer = ({ mode }) => {
               mode === "dark" ? "text-white" : "text-black"
             }`}
           >
-            הדין רמא של פתרונות
+            הדור הבא של פתרונות{" "}
           </h1>
           <h2
             className={`text-3xl md:text-6xl ${
@@ -568,7 +581,7 @@ const Footer = ({ mode }) => {
               mode === "dark" ? "text-white" : "text-black"
             }`}
           >
-            תחת קרית נט אחות
+            תחת קורת גג אחת{" "}
           </p>
         </div>
         <div className="left md:w-[40%] flex flex-col items-center">
@@ -601,25 +614,27 @@ const Footer = ({ mode }) => {
               mode === "dark" ? "text-white" : "text-[#042140]"
             } md:text-justify text-sm mb-4 md:text-base leading-5`}
           >
-            מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום התקשורת, מתח נמוך
-            ומולטימדיה. בשנתיים האחרונות הקמנו מחלקת מחשוב עם התמחות בפתרונות
-            תקשורת מתקדמים והכל תחת קורת גג אחת.
+            מאז שנת 2013 העמקנו בעולם התקשורת לעסקים, הבנו את הפער בהיצע מול
+            הביקוש, פיצחנו את הצרכים הייחודיים והתאמנו פתרון כולל המאפשר לנו תחת
+            קורת גג אחת להקים ולתפעל את כלל הצרכים בתחום התקשורת לחברות ועסקים. 
           </p>
           <p
             className={`text-center ${
               mode === "dark" ? "text-white" : "text-[#042140]"
             } md:text-justify text-sm mb-4 md:text-base leading-5`}
           >
-            אנחנו מציעים חלופה מתקדמת ששמה את הלקוח במרכז. מעמידים ללקוחות שלנו
-            מרכז שירות ותמיכה מתקדמים עם היענות גבוהה מסביב לשעון .
+            לתת אלטרנטיבה שפויה ששמה את הלקוח במרכז בעולם התקשורת העסקית. אנחנו
+            בוחרים מידי יום להתנהל בצורה שתתמוך בלקוחות שלנו ומבינה את הלחצים
+            בהם הם מתנהלים. 
           </p>
           <p
             className={`text-center ${
               mode === "dark" ? "text-white" : "text-[#042140]"
             } md:text-justify text-sm mb-4 md:text-base leading-5`}
           >
-            נמשיך לפתח מוצרים וממשקים "אין האוס" כחול-לבן, כדיי להוביל את השוק
-            לצד לקוחותינו , בחוד החנית הטכנולוגית.
+            חדשנות טכנולוגית היא ביטוי המפתח. אנחנו מפתחים פתרונות תוכנה שיקלו
+            על הלקוח, בונים גשרים על ידי פיתוח ממשקים ודואגים לספק פתרונות
+            יצירתיים וחכמים לבעיות היומיות איתן הלקוח מתמודד. 
           </p>
         </div>
       </div>
@@ -784,7 +799,7 @@ const Invoice = ({ mode, setMode }) => {
   const [showToast, setShowToast] = React.useState(false);
   const [toastMessage, setToastMessage] = React.useState("");
   const [mondayData, setMondayData] = React.useState([]);
-  
+
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const itemId = searchParams.get("id");
@@ -796,36 +811,37 @@ const Invoice = ({ mode, setMode }) => {
     setPdfGenerating(true);
     setShowToast(true);
     setToastMessage("📄 Generating PDF...");
-    
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       // Get the element to capture
-      const element = document.querySelector(".PDF") || document.querySelector("body");
+      const element =
+        document.querySelector(".PDF") || document.querySelector("body");
       if (!element) {
         throw new Error("Element not found");
       }
-      
+
       // Convert DOM element directly to PNG
       const pngDataUrl = await domtoimage.toPng(element, {
         quality: 1,
         style: {
-          'box-shadow': 'none'
-        }
+          "box-shadow": "none",
+        },
       });
-      
+
       // Get actual element dimensions
       const elementWidth = element.scrollWidth;
       const elementHeight = element.scrollHeight;
-      
+
       // Convert pixels to mm (96 DPI to mm conversion: 1px = 0.264583mm)
       const pdfWidth = elementWidth * 0.264583;
       const pdfHeight = elementHeight * 0.264583;
-      
+
       // Create PDF with dynamic height based on content
-      const pdf = new jsPDF('p', 'mm', [pdfWidth, pdfHeight]);
-      pdf.addImage(pngDataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      
+      const pdf = new jsPDF("p", "mm", [pdfWidth, pdfHeight]);
+      pdf.addImage(pngDataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+
       // Generate filename
       let subitemName = "";
       if (mondayResponse?.data?.items?.[0]?.name) {
@@ -833,24 +849,26 @@ const Invoice = ({ mode, setMode }) => {
       } else if (mondayResponse?.[0]?.name) {
         subitemName = mondayResponse[0].name;
       }
-      
+
       const now = new Date();
-      const dateStr = now.toLocaleDateString('he-IL').replace(/\//g, '.');
-      const timeStr = now.toLocaleTimeString('he-IL', {hour12: false}).replace(/:/g, '.');
-      
+      const dateStr = now.toLocaleDateString("he-IL").replace(/\//g, ".");
+      const timeStr = now
+        .toLocaleTimeString("he-IL", { hour12: false })
+        .replace(/:/g, ".");
+
       const fileName = `מודוס מדיה הצעה ${subitemName} ${dateStr}.${timeStr}.pdf`;
-      
+
       // Create file
       const pdfBlob = pdf.output("blob");
       const file = new File([pdfBlob], fileName, { type: "application/pdf" });
-      
+
       setPdfFile(file);
       setPdfGenerated(true);
       setPdfGenerating(false);
       setShowToast(true);
       setToastMessage("✅ PDF ready for download");
       setTimeout(() => setShowToast(false), 3000);
-      
+
       // Upload to Dropbox/Monday if needed
       try {
         const fullMondayItemId = getQueryParam("id") || 9542442798;
@@ -860,7 +878,6 @@ const Invoice = ({ mode, setMode }) => {
       } catch (uploadError) {
         console.error("Upload error:", uploadError);
       }
-      
     } catch (error) {
       console.error("PDF generation failed:", error);
       setPdfGenerating(false);
@@ -879,7 +896,7 @@ const Invoice = ({ mode, setMode }) => {
 
     // Create download link
     const url = URL.createObjectURL(pdfFile);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
     link.download = pdfFile.name;
     document.body.appendChild(link);
@@ -920,7 +937,9 @@ const Invoice = ({ mode, setMode }) => {
           setLoading(false);
         });
     });
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, [itemId]);
 
   if (error) {
@@ -963,10 +982,13 @@ const Invoice = ({ mode, setMode }) => {
           />
         )}
         <Footer mode={mode} />
-        
+
         {/* Toast Notification for PDF Status */}
         {showToast && (
-          <div className="fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-fade-in-out" style={{minWidth:'180px',textAlign:'center'}}>
+          <div
+            className="fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-fade-in-out"
+            style={{ minWidth: "180px", textAlign: "center" }}
+          >
             {toastMessage}
           </div>
         )}
