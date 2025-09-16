@@ -12,7 +12,7 @@ const Header = ({ mode, setMode }) => {
       className="text-white px-4 py-6 md:px-8 md:py-8 relative"
       style={{ background: "linear-gradient(90deg, #062D57 0%, #031327 100%)" }}
     >
-      <div dir="ltr" className="flex items-center space-x-8 px-20 md:absolute md:px-0 md:left-[20%]">
+      <div dir="ltr" className="flex items-center space-x-4 md:space-x-8 px-4 md:absolute md:px-0 md:left-[20%]">
         <button
           className={`cursor-pointer text-xs flex flex-col gap-1 items-center focus:outline-none ${
             mode === "light" ? "underline underline-offset-4" : ""
@@ -44,10 +44,10 @@ const Header = ({ mode, setMode }) => {
         />
       </div>
       <div className="max-w-2xl mx-auto">
-        <h1 className="md:text-2xl mb-4">הדין רמא של פתרונות</h1>
+        <h1 className="md:text-2xl mb-4">הדור הבא של פתרונות</h1>
         <h2 className="text-3xl md:text-5xl">התקשורת</h2>
         <h3 className="text-3xl md:text-5xl">והמולטימדיה לעסקים</h3>
-        <p className="md:text-2xl">תחת קרית נט אחות</p>
+        <p className="md:text-2xl">תחת קורת גג אחת</p>
       </div>
     </div>
   );
@@ -349,7 +349,7 @@ const TableRow = ({
           </div>
         </div>
       )}
-      <div className="md:px-12">
+      <div className="px-6 md:px-12">
         <div className="flex justify-between gap-4 py-2 border-b border-gray-300">
           <div className="text-right flex-3">
             <div
