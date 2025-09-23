@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { getProposalMetaAndAccount } from "./monday";
 import { useLocation } from "react-router-dom";
 import domtoimage from "dom-to-image";
 import jsPDF from "jspdf";
@@ -126,7 +127,7 @@ const CompanyInfo = ({ mode }) => {
           </div>
           <div className="flex items-center gap-2 flex-1 justify-center px-4">
             <img src="/@.png" alt="" />
-            <span>billing@modusmedi a.io</span>
+            <span>billing@modusmedia.io</span>
           </div>
           <div className="flex items-center gap-2 flex-1 justify-center px-4">
             <img src="/call.png" alt="" />
@@ -174,6 +175,58 @@ const CompanyInfo = ({ mode }) => {
 
 // Invoice Header Component
 const InvoiceHeader = ({ mode }) => {
+  const [metaData, setMetaData] = React.useState({
+    proposalNumber: "",
+    address: "",
+    accountName: "",
+    contactName: "",
+  });
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const itemId = searchParams.get("id");
+
+  React.useEffect(() => {
+    if (!itemId) {
+      setError("Item ID not found in query parameters");
+      setLoading(false);
+      return;
+    }
+
+    getProposalMetaAndAccount(itemId)
+      .then((result) => {
+        console.log("Proposal Meta and Account Info:", result);
+        setMetaData({
+          proposalNumber: result.proposalNumber || "744",
+          address: result.address || "משרד דיין 3, ראשון לציין",
+          accountName: result.accountName || "סוויטיים סינמה סיטי ראשלצ בע\"מ",
+          contactName: result.contactName || "תומר שי",
+        });
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching proposal meta/account:", err);
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [itemId]);
+
+  if (loading) {
+    return <div>טוען...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">שגיאה: {error}</div>;
+  }
+
+  // Get today's date in international YYYY-MM-DD format
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Remove 'MS' prefix if present
+  const proposalNumberClean = metaData.proposalNumber.replace(/^MS\s*/i, "");
+
   return (
     <div dir="rtl" className="mt-12">
       <div className="flex justify-between items-start mb-8">
@@ -182,14 +235,14 @@ const InvoiceHeader = ({ mode }) => {
             mode === "dark" ? "text-white" : "text-black"
           }`}
         >
-          הצעת מחיר 744
+          הצעת מחיר {proposalNumberClean}
         </h1>
         <p
           className={`text-lg md:text-3xl ${
             mode === "dark" ? "text-white" : "text-black"
           }`}
         >
-          10/07/2025
+          {today}
         </p>
       </div>
       <div>
@@ -199,14 +252,14 @@ const InvoiceHeader = ({ mode }) => {
             mode === "dark" ? "text-white" : "text-black"
           }`}
         >
-          סוויטיים סינמה סיטי ראשלצ בע"מ - לידי תומר שי
+          {metaData.accountName} - לידי {metaData.contactName}
         </p>
         <p
           className={`text-lg md:text-3xl ${
             mode === "dark" ? "text-white" : "text-black"
           }`}
         >
-          משרד דיין 3, ראשון לציין
+          {metaData.address}
         </p>
       </div>
     </div>
@@ -937,6 +990,7 @@ const Invoice = ({ mode, setMode }) => {
           setLoading(false);
         });
     });
+
     return () => {
       isMounted = false;
     };
