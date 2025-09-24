@@ -221,11 +221,15 @@ const InvoiceHeader = ({ mode }) => {
     return <div className="text-red-500">שגיאה: {error}</div>;
   }
 
-  // Get today's date in international YYYY-MM-DD format
-  const today = new Date().toISOString().slice(0, 10);
+  // Get today's date in DD/MM/YYYY format
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+  const today = `${day}/${month}/${year}`;
 
-  // Remove 'MS' prefix if present
-  const proposalNumberClean = metaData.proposalNumber.replace(/^MS\s*/i, "");
+  // Remove 'MS' prefix and any hyphens
+  const proposalNumberClean = metaData.proposalNumber.replace(/^MS\s*/i, "").replace(/-/g, "");
 
   return (
     <div dir="rtl" className="mt-12">
