@@ -147,7 +147,7 @@ const CompanyInfo = ({ mode }) => {
             mode === "dark" ? "text-white" : "text-gray-600"
           } text-xs`}
         >
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center mb-4">
             <div className="flex items-center gap-2 justify-center">
               <img className="w-4 h-4" src="/Home.png" alt="" />
               <span>ח.פ: 516793320</span>
@@ -162,7 +162,7 @@ const CompanyInfo = ({ mode }) => {
               <img className="w-4 h-4" src="/call.png" alt="" />
               <span>03-9521528</span>
             </div>
-            <div className="flex items-center gap-2 justify-center px-4">
+            <div className="flex items-center gap-2 justify-end px-4">
               <img className="w-4 h-4" src="/Pin.png" alt="" />
               <span>דרך מנחם בגין 150, מגדל WE, תל אביב–יפו</span>
             </div>
