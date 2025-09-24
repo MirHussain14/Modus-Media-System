@@ -272,31 +272,31 @@ const InvoiceHeader = ({ mode }) => {
 
 const TableHeader = ({ mode }) => {
   return (
-    <div className="md:px-10 ">
+    <div className="md:ps-10 ">
       <div className="flex justify-between md:gap-4 px-4 font-medium">
         <div
-          className={`text-xs md:opacity-[80%] ${
+          className={`text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
           } md:text-2xl flex-3`}
         >
           תיאור
         </div>
         <div
-          className={`md:text-center text-xs md:opacity-[80%] ${
+          className={`md:text-right md:ps-21 text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
           } md:text-2xl flex-1`}
         >
           כמות
         </div>
         <div
-          className={`md:text-center text-xs md:opacity-[80%] ${
+          className={`md:text-right md:pe-1 text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
           } md:text-2xl flex-1`}
         >
           מחיר יח'
         </div>
         <div
-          className={`md:text-left text-xs md:opacity-[80%] ${
+          className={`md:text-left text-left md:ps-0 ps-2 text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
           } md:text-2xl flex-1`}
         >
@@ -346,7 +346,7 @@ const TableRow = ({
   const [showPopup, setShowPopup] = React.useState(false);
   const isLongSubtitle = subtitle && subtitle.length > 150;
   const truncatedSubtitle = isLongSubtitle
-    ? subtitle.slice(0, 350) + "..."
+    ? subtitle.slice(0, 350)
     : subtitle;
 
   return (
@@ -426,11 +426,11 @@ const TableRow = ({
                   <>
                     {truncatedSubtitle}
                     <button
-                      className="ml-2 text-blue-500 underline text-xs cursor-pointer"
+                      className="mr-2 text-blue-500 underline text-xs cursor-pointer"
                       type="button"
                       onClick={() => setShowPopup(true)}
                     >
-                      קרא עוד
+                      {"." + "קרא עוד"}
                     </button>
                   </>
                 ) : (
@@ -671,27 +671,21 @@ const Footer = ({ mode }) => {
               mode === "dark" ? "text-white" : "text-[#042140]"
             } md:text-justify text-sm mb-4 md:text-base leading-5`}
           >
-            מאז שנת 2013 העמקנו בעולם התקשורת לעסקים, הבנו את הפער בהיצע מול
-            הביקוש, פיצחנו את הצרכים הייחודיים והתאמנו פתרון כולל המאפשר לנו תחת
-            קורת גג אחת להקים ולתפעל את כלל הצרכים בתחום התקשורת לחברות ועסקים. 
+            מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום התקשורת, מתח נמוך ומולטימדיה. בשנתיים האחרונות הקמנו מחלקת מחשוב עם התמחות בפתרונות תקשורת מתקדמים והכל תחת קורת גג אחת. 
           </p>
           <p
             className={`text-center ${
               mode === "dark" ? "text-white" : "text-[#042140]"
             } md:text-justify text-sm mb-4 md:text-base leading-5`}
           >
-            לתת אלטרנטיבה שפויה ששמה את הלקוח במרכז בעולם התקשורת העסקית. אנחנו
-            בוחרים מידי יום להתנהל בצורה שתתמוך בלקוחות שלנו ומבינה את הלחצים
-            בהם הם מתנהלים. 
+            אנחנו מציעים חלופה מתקדמת ששמה את הלקוח במרכז.  מעמידים ללקוחות שלנו מרכז שירות ותמיכה מתקדמים עם היענות גבוהה מסביב לשעון.
           </p>
           <p
             className={`text-center ${
               mode === "dark" ? "text-white" : "text-[#042140]"
             } md:text-justify text-sm mb-4 md:text-base leading-5`}
           >
-            חדשנות טכנולוגית היא ביטוי המפתח. אנחנו מפתחים פתרונות תוכנה שיקלו
-            על הלקוח, בונים גשרים על ידי פיתוח ממשקים ודואגים לספק פתרונות
-            יצירתיים וחכמים לבעיות היומיות איתן הלקוח מתמודד. 
+            נמשיך לפתח מוצרים וממשקים “אין האוס” כחול-לבן, כדיי להוביל את השוק לצד לקוחותינו , בחוד החנית הטכנולוגית.
           </p>
         </div>
       </div>
