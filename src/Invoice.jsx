@@ -147,7 +147,7 @@ const CompanyInfo = ({ mode }) => {
             mode === "dark" ? "text-white" : "text-gray-600"
           } text-xs`}
         >
-          <div className="flex items-center mb-4">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2 justify-center">
               <img className="w-4 h-4" src="/Home.png" alt="" />
               <span>ח.פ: 516793320</span>
