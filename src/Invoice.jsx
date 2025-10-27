@@ -101,7 +101,7 @@ const CompanyInfo = ({ mode }) => {
             <div className="text-center flex-1 border-r border-gray-500 px-2">
               מרכזיה בענן
             </div>
-            <div className="text-left px-2 flex-2 border-r border-gray-500">
+            <div className="text-left text-[0.64rem] md:text-xs px-2 flex-2 border-r border-gray-500">
               תשתיות תקשורת קווית ואלחוטית
             </div>
           </div>
