@@ -591,7 +591,7 @@ const PricingTable = ({
 
           {items.length > 0 && (
             <TableRow
-              description={`סה״כ ${title}`}
+              description={`סה״ג ${title}`}
               unit=""
               quantity=""
               unitPrice=""
@@ -873,25 +873,57 @@ const Invoice = ({ mode, setMode }) => {
         throw new Error("Element not found");
       }
 
-      // Convert DOM element directly to PNG
-      const pngDataUrl = await domtoimage.toPng(element, {
-        quality: 1,
-        style: {
-          "box-shadow": "none",
-        },
-      });
-
       // Get actual element dimensions
       const elementWidth = element.scrollWidth;
       const elementHeight = element.scrollHeight;
 
-      // Convert pixels to mm (96 DPI to mm conversion: 1px = 0.264583mm)
+      // Use 2x scale factor for good quality with reasonable file size
+      const scale = 2;
+
+      // Convert DOM element to JPEG with optimized quality
+      const jpegDataUrl = await domtoimage.toJpeg(element, {
+        quality: 0.85, // Good balance between quality and file size
+        width: elementWidth * scale,
+        height: elementHeight * scale,
+        style: {
+          "box-shadow": "none",
+          transform: `scale(${scale})`,
+          transformOrigin: 'top left',
+          width: `${elementWidth}px`,
+          height: `${elementHeight}px`,
+          // Improve font rendering
+          '-webkit-font-smoothing': 'antialiased',
+          '-moz-osx-font-smoothing': 'grayscale',
+          'text-rendering': 'optimizeLegibility',
+        },
+        // Improve pixel ratio for retina displays
+        pixelRatio: scale,
+      });
+
+      // Convert pixels to mm with proper scaling
       const pdfWidth = elementWidth * 0.264583;
       const pdfHeight = elementHeight * 0.264583;
 
-      // Create PDF with dynamic height based on content
-      const pdf = new jsPDF("p", "mm", [pdfWidth, pdfHeight]);
-      pdf.addImage(pngDataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+      // Create PDF with dynamic height based on content and compression
+      const pdf = new jsPDF({
+        orientation: "p",
+        unit: "mm",
+        format: [pdfWidth, pdfHeight],
+        compress: true, // Enable compression
+        precision: 2, // Lower precision for smaller file size
+      });
+      
+      // Add JPEG image with compression
+      pdf.addImage(
+        jpegDataUrl, 
+        "JPEG", 
+        0, 
+        0, 
+        pdfWidth, 
+        pdfHeight, 
+        undefined, 
+        "FAST" // Use fast compression
+      );
 
       // Generate filename
       let subitemName = "";
@@ -922,10 +954,16 @@ const Invoice = ({ mode, setMode }) => {
 
       // Upload to Dropbox/Monday if needed
       try {
-        const fullMondayItemId = getQueryParam("id") || 9542442798;
-        const shortId = fullMondayItemId % 1000; // Get last 3 digits
         const dropboxTargetPath = `/Shiran Tal/Modus/הצעות מחיר/${fileName}`;
-        await uploadAndLinkToMonday(file, dropboxTargetPath, shortId);
+        // Extract the Monday item object from the response
+        const mondayItem = mondayResponse?.data?.items?.[0] || mondayResponse?.[0];
+        console.log("Uploading PDF to Dropbox at:", mondayItem);
+        if (mondayItem) {
+          // Pass the itemId from URL query parameter
+          await uploadAndLinkToMonday(file, dropboxTargetPath, itemId);
+        } else {
+          console.warn("No Monday item data available for upload");
+        }
       } catch (uploadError) {
         console.error("Upload error:", uploadError);
       }

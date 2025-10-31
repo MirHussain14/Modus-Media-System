@@ -22,9 +22,13 @@ const mondayColumnId = "link_mkt8nh5v";
 export async function uploadAndLinkToMonday(
   fileBuffer,
   dropboxTargetPath = '/Upload Testing/sample3.pdf',
-  mondayItemId = 9542442798
+  mondayItemId
 ) {
   try {
+    if (!mondayItemId) {
+      throw new Error("Monday item ID is required");
+    }
+
     // Step 1: Refresh Dropbox token
     dbx.auth.setRefreshToken(
       "8y6mdvGrluIAAAAAAAAAAZJBUyEtlksV35MfsBitzrMyk1sh1k40-feIusmYNdmH"
@@ -42,8 +46,8 @@ export async function uploadAndLinkToMonday(
     }`;
 
     const mondayResponse = await monday.api(query);
+    console.log("📄 Monday Column Text:", mondayResponse);
     const text = mondayResponse.data.items[0].column_values[0].text;
-    console.log("📄 Monday Column Text:", text);
 
     if (!text) {
       console.log("⚠️ Column is empty. Uploading file to Dropbox...");
@@ -91,6 +95,3 @@ export async function uploadAndLinkToMonday(
     console.error("❌ Error occurred:", err);
   }
 }
-
-// Example usage:
-// uploadAndLinkToMonday('./sample3.txt', '/Upload Testing/sample3.txt', 9542442798);
