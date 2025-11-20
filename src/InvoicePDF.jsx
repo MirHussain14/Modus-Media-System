@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { getProposalMetaAndAccount } from "./monday";
 
 // HeaderPDF Component
 const HeaderPDF = ({ mode, setMode }) => {
@@ -91,38 +92,95 @@ const CompanyInfoPDF = ({ mode }) => {
 
 // InvoiceHeaderPDF Component
 const InvoiceHeaderPDF = ({ mode }) => {
+  const [metaData, setMetaData] = React.useState({
+    proposalNumber: "",
+    address: "",
+    accountName: "",
+    contactName: "",
+  });
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const itemId = searchParams.get("id");
+
+  React.useEffect(() => {
+    if (!itemId) {
+      setError("Item ID not found in query parameters");
+      setLoading(false);
+      return;
+    }
+
+    getProposalMetaAndAccount(itemId)
+      .then((result) => {
+        console.log("Proposal Meta and Account Info:", result);
+        setMetaData({
+          proposalNumber: result.proposalNumber || "744",
+          address: result.address || "משרד דיין 3, ראשון לציין",
+          accountName: result.accountName || "סוויטיים סינמה סיטי ראשלצ בע\"מ",
+          contactName: result.contactName || "תומר שי",
+        });
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching proposal meta/account:", err);
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [itemId]);
+
+  if (loading) {
+    return <div>טוען...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">שגיאה: {error}</div>;
+  }
+
+  // Get today's date in DD/MM/YYYY format
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+  const today = `${day}/${month}/${year}`;
+
+  // Remove 'MS' prefix and any hyphens
+  const proposalNumberClean = metaData.proposalNumber.replace(/^MS\s*/i, "").replace(/-/g, "");
+
   return (
     <div dir="rtl" className="mt-12">
       <div className="flex justify-between items-start mb-8">
         <h1
-          className={`text-3xl ${
+          className={`text-lg md:text-3xl ${
             mode === "dark" ? "text-white" : "text-black"
           }`}
         >
-          הצעת מחיר 744
+          הצעת מחיר {proposalNumberClean}
         </h1>
         <p
-          className={`text-3xl ${
+          className={`text-lg md:text-3xl ${
             mode === "dark" ? "text-white" : "text-black"
           }`}
         >
-          10/07/2025
+          {today}
         </p>
       </div>
       <div>
         <p
-          className={`text-5xl ${
+          dir="rtl"
+          className={`text-2xl md:text-5xl ${
             mode === "dark" ? "text-white" : "text-black"
           }`}
         >
-          סוויטיים סינמה סיטי ראשלצ בע"מ - לידי תומר שי
+          {metaData.accountName} - לידי {metaData.contactName}
         </p>
         <p
-          className={`text-3xl ${
+          className={`text-lg md:text-3xl ${
             mode === "dark" ? "text-white" : "text-black"
           }`}
         >
-          משרד דיין 3, ראשון לציין
+          {metaData.address}
         </p>
       </div>
     </div>
@@ -132,33 +190,33 @@ const InvoiceHeaderPDF = ({ mode }) => {
 // TableHeaderPDF Component
 const TableHeaderPDF = ({ mode }) => {
   return (
-    <div className="px-10">
-      <div className="flex justify-between gap-4 px-6 font-medium">
+    <div className="md:ps-10 ">
+      <div className="flex justify-between md:gap-4 px-4 font-medium">
         <div
-          className={`text-2xl opacity-[80%] ${
+          className={`text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
-          } flex-3`}
+          } md:text-2xl flex-3`}
         >
           תיאור
         </div>
         <div
-          className={`text-center text-2xl opacity-[80%] ${
+          className={`md:text-right md:ps-21 text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
-          } flex-1`}
+          } md:text-2xl flex-1`}
         >
           כמות
         </div>
         <div
-          className={`text-center text-2xl opacity-[80%] ${
+          className={`md:text-right md:pe-1 text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
-          } flex-1`}
+          } md:text-2xl flex-1`}
         >
           מחיר יח'
         </div>
         <div
-          className={`text-center text-2xl opacity-[80%] ${
+          className={`md:text-left text-left md:ps-0 ps-2 text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
-          } flex-1`}
+          } md:text-2xl flex-1`}
         >
           סה"כ מחיר
         </div>
@@ -647,16 +705,6 @@ const InvoicePDF = ({ mode }) => {
     });
   }, [itemId]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen z-[-1] items-center justify-center flex">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-lg font-semibold">טוען נתונים מהמערכת...</p>
-        </div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
