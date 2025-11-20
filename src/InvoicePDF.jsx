@@ -338,7 +338,7 @@ const PricingTablePDF = ({ title, mode, items = [], showDownload = false }) => {
           )}
           {items.length > 0 && (
             <TableRowPDF
-              description={`סה״כ ${title}`}
+description={`סה״כ ${title} לפני מע״מ`}
               unit=""
               quantity=""
               unitPrice=""
