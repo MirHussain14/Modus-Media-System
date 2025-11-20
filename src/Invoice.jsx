@@ -926,12 +926,13 @@ const Invoice = ({ mode, setMode }) => {
       const elementWidth = element.scrollWidth;
       const elementHeight = element.scrollHeight;
 
-      // Use 2x scale factor for good quality with reasonable file size
-      const scale = 2;
+      // Use slightly larger than 2x scale for a modest quality bump
+      // (keeps file size reasonable while improving sharpness)
+      const scale = 2.2;
 
       // Convert DOM element to JPEG with optimized quality
       const jpegDataUrl = await domtoimage.toJpeg(element, {
-        quality: 0.85, // Good balance between quality and file size
+        quality: 0.90, // Slightly higher quality for sharper PDF (still reasonable size)
         width: elementWidth * scale,
         height: elementHeight * scale,
         style: {
@@ -959,7 +960,7 @@ const Invoice = ({ mode, setMode }) => {
         unit: "mm",
         format: [pdfWidth, pdfHeight],
         compress: true, // Enable compression
-        precision: 2, // Lower precision for smaller file size
+        precision: 3, // A bit more precision for improved rendering
       });
       
       // Add JPEG image with compression

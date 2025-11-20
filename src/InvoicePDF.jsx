@@ -388,8 +388,8 @@ const FooterPDF = ({ mode }) => {
             תחת קורת גג אחת{" "}
           </p>
         </div>
-        <div className="left w-[40%] flex flex-col items-center">
-          <div className="flex items-center gap-5 mb-8">
+        <div className="left w-[40%] flex flex-col">
+          <div className="flex items-center gap-5 mb-8 mx-auto">
             <div
               dir="ltr"
               className={`text-4xl leading-9 ${
@@ -413,13 +413,62 @@ const FooterPDF = ({ mode }) => {
               <h1>מערכות</h1>
             </div>
           </div>
-          <p
-            className={`text-justify text-base leading-5 ${
+          <div className="hidden md:block">
+<p
+  style={{
+    direction: "rtl",
+    textAlign: "right",
+    textWrap: "balance",
+    wordSpacing: "0.55rem",   // <-- sweet spot
+    maxWidth: "70ch"          // <-- creates the clean justified "box"
+  }}
+  className={` ${
               mode === "dark" ? "text-white" : "text-[#042140]"
-            } mb-4`}
+            }  text-sm md:text-base leading-5`}
+>
+מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום</p>
+<p
+  style={{
+    direction: "rtl",
+    textAlign: "right",
+    textWrap: "balance",
+    wordSpacing: "0.35rem",   // <-- sweet spot
+    maxWidth: "70ch"          // <-- creates the clean justified "box"
+  }}
+  className={` ${
+              mode === "dark" ? "text-white" : "text-[#042140]"
+            }  text-sm md:text-base leading-5`}
+>
+התקשורת, מתח נמוך ומולטימדיה. בשנתיים האחרונות הקמנו</p>
+<p
+  style={{
+    direction: "rtl",
+    textAlign: "right",
+    textWrap: "balance",
+    wordSpacing: "0.44rem",   // <-- sweet spot
+    maxWidth: "70ch"          // <-- creates the clean justified "box"
+  }}
+  className={` ${
+              mode === "dark" ? "text-white" : "text-[#042140]"
+            }  text-sm md:text-base leading-5`}
+>מחלקת מחשוב עם התמחות בפתרונות תקשורת מתקדמים</p>
+<p
+  style={{
+    textAlign: "right",
+    wordSpacing: "0.44rem",   // <-- sweet spot
+  }}
+  className={`text-right ${
+              mode === "dark" ? "text-white" : "text-[#042140]"
+            }  text-sm mb-4 md:text-base leading-5`}>והכל תחת קורת גג אחת.</p> </div>
+            <div className="block md:hidden">
+            <p
+            className={`text-center ${
+              mode === "dark" ? "text-white" : "text-[#042140]"
+            }  text-sm mb-4 md:text-base leading-5`}
           >
-            מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום התקשורת, מתח נמוך ומולטימדיה. בשנתיים האחרונות הקמנו מחלקת מחשוב עם התמחות בפתרונות תקשורת מתקדמים והכל תחת קורת גג אחת.
+            מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום התקשורת, מתח נמוך ומולטימדיה. בשנתיים האחרונות הקמנו מחלקת מחשוב עם התמחות בפתרונות תקשורת מתקדמים והכל תחת קורת גג אחת. 
           </p>
+          </div>
           <p
             className={`text-justify text-base leading-5 ${
               mode === "dark" ? "text-white" : "text-[#042140]"
