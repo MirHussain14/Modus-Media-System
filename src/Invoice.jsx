@@ -591,7 +591,7 @@ const PricingTable = ({
 
           {items.length > 0 && (
             <TableRow
-              description={`סה״ג ${title}`}
+description={`סה״כ ${title} לפני מע״מ`}
               unit=""
               quantity=""
               unitPrice=""
@@ -611,7 +611,7 @@ const Footer = ({ mode }) => {
   return (
     <div className="" dir="rtl">
       <div className="md:p-20 p-4 flex justify-center md:justify-between items-center">
-        <div className="right w-[60%] hidden md:block">
+        <div className="right w-[60%] hidden md:block m">
           <h1
             className={`md:text-3xl mb-4 ${
               mode === "dark" ? "text-white" : "text-black"
@@ -641,8 +641,8 @@ const Footer = ({ mode }) => {
             תחת קורת גג אחת{" "}
           </p>
         </div>
-        <div className="left md:w-[40%] flex flex-col items-center">
-          <div className="flex items-center gap-5 md:mb-8 mb-4">
+        <div className="left md:w-[40%] flex flex-col sm:items-center">
+          <div className="flex items-center gap-5 md:mb-8 mb-4 mx-auto">
             <div
               dir="ltr"
               className={`text-xl md:text-4xl leading-5 md:leading-9 ${
@@ -666,13 +666,62 @@ const Footer = ({ mode }) => {
               <h1>מערכות</h1>
             </div>
           </div>
-          <p
+          <div className="hidden md:block">
+<p
+  style={{
+    direction: "rtl",
+    textAlign: "right",
+    textWrap: "balance",
+    wordSpacing: "0.55rem",   // <-- sweet spot
+    maxWidth: "70ch"          // <-- creates the clean justified "box"
+  }}
+  className={` ${
+              mode === "dark" ? "text-white" : "text-[#042140]"
+            }  text-sm md:text-base leading-5`}
+>
+מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום</p>
+<p
+  style={{
+    direction: "rtl",
+    textAlign: "right",
+    textWrap: "balance",
+    wordSpacing: "0.35rem",   // <-- sweet spot
+    maxWidth: "70ch"          // <-- creates the clean justified "box"
+  }}
+  className={` ${
+              mode === "dark" ? "text-white" : "text-[#042140]"
+            }  text-sm md:text-base leading-5`}
+>
+התקשורת, מתח נמוך ומולטימדיה. בשנתיים האחרונות הקמנו</p>
+<p
+  style={{
+    direction: "rtl",
+    textAlign: "right",
+    textWrap: "balance",
+    wordSpacing: "0.44rem",   // <-- sweet spot
+    maxWidth: "70ch"          // <-- creates the clean justified "box"
+  }}
+  className={` ${
+              mode === "dark" ? "text-white" : "text-[#042140]"
+            }  text-sm md:text-base leading-5`}
+>מחלקת מחשוב עם התמחות בפתרונות תקשורת מתקדמים</p>
+<p
+  style={{
+    textAlign: "right",
+    wordSpacing: "0.44rem",   // <-- sweet spot
+  }}
+  className={`text-right ${
+              mode === "dark" ? "text-white" : "text-[#042140]"
+            }  text-sm mb-4 md:text-base leading-5`}>והכל תחת קורת גג אחת.</p> </div>
+            <div className="block md:hidden">
+            <p
             className={`text-center ${
               mode === "dark" ? "text-white" : "text-[#042140]"
-            } md:text-justify text-sm mb-4 md:text-base leading-5`}
+            }  text-sm mb-4 md:text-base leading-5`}
           >
             מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום התקשורת, מתח נמוך ומולטימדיה. בשנתיים האחרונות הקמנו מחלקת מחשוב עם התמחות בפתרונות תקשורת מתקדמים והכל תחת קורת גג אחת. 
           </p>
+          </div>
           <p
             className={`text-center ${
               mode === "dark" ? "text-white" : "text-[#042140]"
