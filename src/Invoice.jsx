@@ -67,27 +67,26 @@ const CompanyInfo = ({ mode }) => {
       </h2>
 
       {/* Services Row - Desktop */}
-      <div className="mb-6 hidden md:block">
-        <div
-          className={`flex justify-between items-center ${
-            mode === "dark" ? "text-white" : "text-gray-600"
-          } text-xl`}
-        >
-          <div className="flex-1">ניהול רשתות</div>
-          <div className="text-center flex-1 border-r border-gray-400 px-4">
-            מרכזיה בענן
-          </div>
-          <div className="text-center flex-2 border-r border-gray-400 px-2">
-            תשתיות תקשורת קווית ואלחוטית
-          </div>
-          <div className="text-center flex-1 border-r border-gray-400 px-4">
-            מערכות מתח נמוך
-          </div>
-          <div className="text-left border-r ps-4 border-gray-400">
-            פתרונות אודיו-וידאו
-          </div>
-        </div>
-      </div>
+
+      {/* Services Row - Desktop */}
+<div className="mb-6 hidden md:block">
+  <div
+    className={`flex ${mode === "dark" ? "text-white" : "text-gray-600"} text-xl`}
+    style={{ justifyContent: 'space-between' }}
+  >
+    <div className="ml-auto">ניהול רשתות</div>
+    <div className="ml-auto mr-auto border-r border-gray-400"></div>
+    <div className="mr-auto ml-auto">מרכזיה בענן</div>
+        <div className="border-r ml-auto mr-auto border-gray-400"></div>
+    <div className="mr-auto ml-auto">תשתיות תקשורת קווית ואלחוטית</div>
+            <div className="border-r ml-auto mr-auto border-gray-400"></div>
+    <div className="mr-auto ml-auto">מערכות מתח נמוך</div>
+            <div className="border-r ml-auto mr-auto border-gray-400"></div>
+
+    <div className="mr-auto">פתרונות אודיו-וידאו</div>
+  </div>
+</div>
+
 
       {/* Services Row - Mobile (2 rows) */}
       <div className="mb-6 md:hidden">
@@ -98,7 +97,7 @@ const CompanyInfo = ({ mode }) => {
         >
           <div className="flex justify-between items-center mb-2">
             <div className="flex-1">ניהול רשתות</div>
-            <div className="text-center flex-1 border-r border-gray-500 px-2">
+            <div className="flex-1 border-r border-gray-500 px-2">
               מרכזיה בענן
             </div>
             <div className="text-left text-[0.64rem] md:text-xs px-2 flex-2 border-r border-gray-500">
