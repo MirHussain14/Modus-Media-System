@@ -122,11 +122,11 @@ const CompanyInfo = ({ mode }) => {
         >
           <div className="flex items-center gap-2 flex-1">
             <img src="/Home.png" alt="" />
-            <span>ח.פ: 516793320</span>
+            <span>ח .פ: 516793320</span>
           </div>
           <div className="flex items-center gap-2 flex-1 justify-center px-4">
             <img src="/@.png" alt="" />
-            <span>billing@modusmedia.io</span>
+            <span>billing@modusmedi a.io</span>
           </div>
           <div className="flex items-center gap-2 flex-1 justify-center px-4">
             <img src="/call.png" alt="" />
@@ -149,11 +149,11 @@ const CompanyInfo = ({ mode }) => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2 justify-center">
               <img className="w-4 h-4" src="/Home.png" alt="" />
-              <span>ח.פ: 516793320</span>
+              <span>ח. פ: 516793320</span>
             </div>
             <div className="flex items-center gap-2 justify-center px-4">
               <img className="w-4 h-4" src="/@.png" alt="" />
-              <span>billing@modusmedia.io</span>
+              <span>billing@modusmedi a.io</span>
             </div>
           </div>
           <div className="flex justify-between items-center">
