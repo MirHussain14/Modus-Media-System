@@ -406,7 +406,7 @@ const TableRow = ({
         </div>
       )}
       <div className="px-6 md:px-12">
-        <div className="flex justify-between gap-4 py-2 border-b border-gray-300">
+        <div className="flex justify-center gap-4 py-2 border-b border-gray-300">
           <div className="text-right flex-3">
             <div
               className={`font-medium text-xs md:text-2xl ${
