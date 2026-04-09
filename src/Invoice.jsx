@@ -13,7 +13,10 @@ const Header = ({ mode, setMode }) => {
       className="text-white px-4 py-6 md:px-8 md:py-8 relative"
       style={{ background: "linear-gradient(90deg, #062D57 0%, #031327 100%)" }}
     >
-      <div dir="ltr" className="flex items-center space-x-4 md:space-x-8 px-4 md:absolute md:px-0 md:left-[20%]">
+      <div
+        dir="ltr"
+        className="flex items-center space-x-4 md:space-x-8 px-4 md:absolute md:px-0 md:left-[20%]"
+      >
         <button
           className={`cursor-pointer text-xs flex flex-col gap-1 items-center focus:outline-none ${
             mode === "light" ? "underline underline-offset-4" : ""
@@ -69,24 +72,23 @@ const CompanyInfo = ({ mode }) => {
       {/* Services Row - Desktop */}
 
       {/* Services Row - Desktop */}
-<div className="mb-6 hidden md:block">
-  <div
-    className={`flex ${mode === "dark" ? "text-white" : "text-gray-600"} text-xl`}
-    style={{ justifyContent: 'space-between' }}
-  >
-    <div className="ml-auto">ניהול רשתות</div>
-    <div className="ml-auto mr-auto border-r border-gray-400"></div>
-    <div className="mr-auto ml-auto">מרכזיה בענן</div>
-        <div className="border-r ml-auto mr-auto border-gray-400"></div>
-    <div className="mr-auto ml-auto">תשתיות תקשורת קווית ואלחוטית</div>
-            <div className="border-r ml-auto mr-auto border-gray-400"></div>
-    <div className="mr-auto ml-auto">מערכות מתח נמוך</div>
-            <div className="border-r ml-auto mr-auto border-gray-400"></div>
+      <div className="mb-6 hidden md:block">
+        <div
+          className={`flex ${mode === "dark" ? "text-white" : "text-gray-600"} text-xl`}
+          style={{ justifyContent: "space-between" }}
+        >
+          <div className="ml-auto">ניהול רשתות</div>
+          <div className="ml-auto mr-auto border-r border-gray-400"></div>
+          <div className="mr-auto ml-auto">מרכזיה בענן</div>
+          <div className="border-r ml-auto mr-auto border-gray-400"></div>
+          <div className="mr-auto ml-auto">תשתיות תקשורת קווית ואלחוטית</div>
+          <div className="border-r ml-auto mr-auto border-gray-400"></div>
+          <div className="mr-auto ml-auto">מערכות מתח נמוך</div>
+          <div className="border-r ml-auto mr-auto border-gray-400"></div>
 
-    <div className="mr-auto">פתרונות אודיו-וידאו</div>
-  </div>
-</div>
-
+          <div className="mr-auto">פתרונות אודיו-וידאו</div>
+        </div>
+      </div>
 
       {/* Services Row - Mobile (2 rows) */}
       <div className="mb-6 md:hidden">
@@ -200,7 +202,7 @@ const InvoiceHeader = ({ mode }) => {
         setMetaData({
           proposalNumber: result.proposalNumber || "744",
           address: result.address || "משרד דיין 3, ראשון לציין",
-          accountName: result.accountName || "סוויטיים סינמה סיטי ראשלצ בע\"מ",
+          accountName: result.accountName || 'סוויטיים סינמה סיטי ראשלצ בע"מ',
           contactName: result.contactName || "תומר שי",
         });
         setLoading(false);
@@ -222,13 +224,15 @@ const InvoiceHeader = ({ mode }) => {
 
   // Get today's date in DD/MM/YYYY format
   const now = new Date();
-  const day = String(now.getDate()).padStart(2, '0');
-  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, "0");
+  const month = String(now.getMonth() + 1).padStart(2, "0");
   const year = now.getFullYear();
   const today = `${day}/${month}/${year}`;
 
   // Remove 'MS' prefix and any hyphens
-  const proposalNumberClean = metaData.proposalNumber.replace(/^MS\s*/i, "").replace(/-/g, "");
+  const proposalNumberClean = metaData.proposalNumber
+    .replace(/^MS\s*/i, "")
+    .replace(/-/g, "");
 
   return (
     <div dir="rtl" className="mt-12">
@@ -271,7 +275,7 @@ const InvoiceHeader = ({ mode }) => {
 
 const TableHeader = ({ mode }) => {
   return (
-    <div className="md:ps-10 ">
+    <div className="md:ps-10 md:pe-24">
       <div className="flex md:gap-4 px-4 font-medium">
         <div
           className={`text-[10px] md:opacity-[80%] ${
@@ -281,7 +285,7 @@ const TableHeader = ({ mode }) => {
           תיאור
         </div>
         <div
-          className={`md:text-right md:ps-21 text-[10px] md:opacity-[80%] ${
+          className={`md:text-right md:ps-24 text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
           } md:text-2xl flex-1`}
         >
@@ -306,6 +310,32 @@ const TableHeader = ({ mode }) => {
   );
 };
 
+const parseNumericValue = (value) => {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const normalized = value.replace(/,/g, "").trim();
+  if (!normalized) {
+    return null;
+  }
+
+  // Keep only the first numeric token so surrounding text does not affect totals.
+  const match = normalized.match(/-?\d+(?:\.\d+)?/);
+  if (!match) {
+    return null;
+  }
+
+  const parsed = Number(match[0]);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const isNumericValue = (value) => parseNumericValue(value) !== null;
+
 const TableRow = ({
   description,
   subtitle,
@@ -316,10 +346,12 @@ const TableRow = ({
   isTotal = false,
   mode,
 }) => {
+  const showCurrency = isNumericValue(totalPrice);
+
   if (isTotal) {
     return (
-      <div className="md:px-6">
-        <div className="flex justify-between gap-4 px-6 py-4">
+      <div className="px-6 md:ps-12 md:pe-28">
+        <div className="flex justify-between gap-4 py-4">
           <div
             className={`text-right text-xs md:text-2xl md:flex-3 flex-4 ${
               mode === "dark" ? "text-white" : "text-black"
@@ -333,9 +365,10 @@ const TableRow = ({
           <div
             className={`text-left font-bold ${
               mode === "dark" ? "text-white" : " text-gradient"
-            } text-xs md:text-2xl md:flex-1`}
+            } text-xs md:text-2xl md:flex-1 gap-4 flex items-center justify-end`}
           >
-            {totalPrice} ₪
+            <p>{totalPrice}</p>
+            {showCurrency && <p>₪</p>}
           </div>
         </div>
       </div>
@@ -344,9 +377,7 @@ const TableRow = ({
 
   const [showPopup, setShowPopup] = React.useState(false);
   const isLongSubtitle = subtitle && subtitle.length > 150;
-  const truncatedSubtitle = isLongSubtitle
-    ? subtitle.slice(0, 350)
-    : subtitle;
+  const truncatedSubtitle = isLongSubtitle ? subtitle.slice(0, 350) : subtitle;
 
   return (
     <>
@@ -405,7 +436,7 @@ const TableRow = ({
           </div>
         </div>
       )}
-      <div className="px-6 md:px-12">
+      <div className="px-6 md:ps-12 md:pe-28">
         <div className="flex justify-center gap-4 py-2 border-b border-gray-300">
           <div className="text-right flex-3">
             <div
@@ -441,25 +472,26 @@ const TableRow = ({
           <div
             className={`text-center text-xs md:text-2xl ${
               mode === "dark" ? "text-white" : "text-gray-700"
-            } flex-1`}
+            } flex-1 gap-4 flex items-center justify-center`}
           >
             {quantity}
           </div>
           <div
             className={`text-center text-xs md:text-2xl ${
               mode === "dark" ? "text-white" : "text-gray-700"
-            } flex-1`}
+            } flex-1 gap-4 flex items-center justify-center`}
           >
-            {unitPrice} ₪
+            <p>{unitPrice}</p>
+            <p>₪</p>
           </div>
           <div
-            className={`text-left text-xs md:text-2xl font-medium ${
-              mode === "dark" ? "text-white" : "text-gray-800"
-            } flex-1`}
+            className={`text-left text-xs md:text-2xl ${
+              mode === "dark" ? "text-white" : "text-gray-700"
+            } flex-1 gap-4 flex items-center justify-end`}
           >
-            {totalPrice} ₪
+            <p>{totalPrice}</p>
+            {showCurrency && <p>₪</p>}
           </div>
-
         </div>
       </div>
     </>
@@ -475,8 +507,8 @@ const PricingTable = ({
 }) => {
   // Calculate total price
   const totalPrice = items.reduce((sum, item) => {
-    const price = parseFloat(item.totalPrice) || 0;
-    return sum + price;
+    const price = parseNumericValue(item.totalPrice);
+    return sum + (price ?? 0);
   }, 0);
 
   return (
@@ -498,7 +530,8 @@ const PricingTable = ({
           position: relative;
           padding: 0px;
           border-radius: 16px;
-          background: linear-gradient(
+          background:
+            linear-gradient(
                 ${mode === "dark" ? "#042140" : "#ffffff"},
                 ${mode === "dark" ? "#042140" : "#ffffff"}
               )
@@ -591,7 +624,7 @@ const PricingTable = ({
 
           {items.length > 0 && (
             <TableRow
-description={`סה״כ ${title} לפני מע״מ`}
+              description={`סה״כ ${title} לפני מע״מ`}
               unit=""
               quantity=""
               unitPrice=""
@@ -667,74 +700,86 @@ const Footer = ({ mode }) => {
             </div>
           </div>
           <div className="hidden md:block">
-<p
-  style={{
-    direction: "rtl",
-    textAlign: "right",
-    textWrap: "balance",
-    wordSpacing: "0.55rem",   // <-- sweet spot
-    maxWidth: "70ch"          // <-- creates the clean justified "box"
-  }}
-  className={` ${
-              mode === "dark" ? "text-white" : "text-[#042140]"
-            }  text-sm md:text-base leading-5`}
->
-מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום</p>
-<p
-  style={{
-    direction: "rtl",
-    textAlign: "right",
-    textWrap: "balance",
-    wordSpacing: "0.35rem",   // <-- sweet spot
-    maxWidth: "70ch"          // <-- creates the clean justified "box"
-  }}
-  className={` ${
-              mode === "dark" ? "text-white" : "text-[#042140]"
-            }  text-sm md:text-base leading-5`}
->
-התקשורת, מתח נמוך ומולטימדיה. בשנתיים האחרונות הקמנו</p>
-<p
-  style={{
-    direction: "rtl",
-    textAlign: "right",
-    textWrap: "balance",
-    wordSpacing: "0.44rem",   // <-- sweet spot
-    maxWidth: "70ch"          // <-- creates the clean justified "box"
-  }}
-  className={` ${
-              mode === "dark" ? "text-white" : "text-[#042140]"
-            }  text-sm md:text-base leading-5`}
->מחלקת מחשוב עם התמחות בפתרונות תקשורת מתקדמים</p>
-<p
-  style={{
-    textAlign: "right",
-    wordSpacing: "0.44rem",   // <-- sweet spot
-  }}
-  className={`text-right ${
-              mode === "dark" ? "text-white" : "text-[#042140]"
-            }  text-sm mb-4 md:text-base leading-5`}>והכל תחת קורת גג אחת.</p> </div>
-            <div className="block md:hidden">
             <p
-            className={`text-center ${
-              mode === "dark" ? "text-white" : "text-[#042140]"
-            }  text-sm mb-4 md:text-base leading-5`}
-          >
-            מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום התקשורת, מתח נמוך ומולטימדיה. בשנתיים האחרונות הקמנו מחלקת מחשוב עם התמחות בפתרונות תקשורת מתקדמים והכל תחת קורת גג אחת. 
-          </p>
+              style={{
+                direction: "rtl",
+                textAlign: "right",
+                textWrap: "balance",
+                wordSpacing: "0.55rem", // <-- sweet spot
+                maxWidth: "70ch", // <-- creates the clean justified "box"
+              }}
+              className={` ${
+                mode === "dark" ? "text-white" : "text-[#042140]"
+              }  text-sm md:text-base leading-5`}
+            >
+              מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום
+            </p>
+            <p
+              style={{
+                direction: "rtl",
+                textAlign: "right",
+                textWrap: "balance",
+                wordSpacing: "0.35rem", // <-- sweet spot
+                maxWidth: "70ch", // <-- creates the clean justified "box"
+              }}
+              className={` ${
+                mode === "dark" ? "text-white" : "text-[#042140]"
+              }  text-sm md:text-base leading-5`}
+            >
+              התקשורת, מתח נמוך ומולטימדיה. בשנתיים האחרונות הקמנו
+            </p>
+            <p
+              style={{
+                direction: "rtl",
+                textAlign: "right",
+                textWrap: "balance",
+                wordSpacing: "0.44rem", // <-- sweet spot
+                maxWidth: "70ch", // <-- creates the clean justified "box"
+              }}
+              className={` ${
+                mode === "dark" ? "text-white" : "text-[#042140]"
+              }  text-sm md:text-base leading-5`}
+            >
+              מחלקת מחשוב עם התמחות בפתרונות תקשורת מתקדמים
+            </p>
+            <p
+              style={{
+                textAlign: "right",
+                wordSpacing: "0.44rem", // <-- sweet spot
+              }}
+              className={`text-right ${
+                mode === "dark" ? "text-white" : "text-[#042140]"
+              }  text-sm mb-4 md:text-base leading-5`}
+            >
+              והכל תחת קורת גג אחת.
+            </p>{" "}
+          </div>
+          <div className="block md:hidden">
+            <p
+              className={`text-center ${
+                mode === "dark" ? "text-white" : "text-[#042140]"
+              }  text-sm mb-4 md:text-base leading-5`}
+            >
+              מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום התקשורת, מתח נמוך
+              ומולטימדיה. בשנתיים האחרונות הקמנו מחלקת מחשוב עם התמחות בפתרונות
+              תקשורת מתקדמים והכל תחת קורת גג אחת. 
+            </p>
           </div>
           <p
             className={`text-center ${
               mode === "dark" ? "text-white" : "text-[#042140]"
             } md:text-justify text-sm mb-4 md:text-base leading-5`}
           >
-            אנחנו מציעים חלופה מתקדמת ששמה את הלקוח במרכז.  מעמידים ללקוחות שלנו מרכז שירות ותמיכה מתקדמים עם היענות גבוהה מסביב לשעון.
+            אנחנו מציעים חלופה מתקדמת ששמה את הלקוח במרכז. מעמידים ללקוחות שלנו
+            מרכז שירות ותמיכה מתקדמים עם היענות גבוהה מסביב לשעון.
           </p>
           <p
             className={`text-center ${
               mode === "dark" ? "text-white" : "text-[#042140]"
             } md:text-justify text-sm mb-4 md:text-base leading-5`}
           >
-            נמשיך לפתח מוצרים וממשקים “אין האוס” כחול-לבן, כדיי להוביל את השוק לצד לקוחותינו , בחוד החנית הטכנולוגית.
+            נמשיך לפתח מוצרים וממשקים “אין האוס” כחול-לבן, כדיי להוביל את השוק
+            לצד לקוחותינו , בחוד החנית הטכנולוגית.
           </p>
         </div>
       </div>
@@ -932,19 +977,19 @@ const Invoice = ({ mode, setMode }) => {
 
       // Convert DOM element to JPEG with optimized quality
       const jpegDataUrl = await domtoimage.toJpeg(element, {
-        quality: 0.90, // Slightly higher quality for sharper PDF (still reasonable size)
+        quality: 0.9, // Slightly higher quality for sharper PDF (still reasonable size)
         width: elementWidth * scale,
         height: elementHeight * scale,
         style: {
           "box-shadow": "none",
           transform: `scale(${scale})`,
-          transformOrigin: 'top left',
+          transformOrigin: "top left",
           width: `${elementWidth}px`,
           height: `${elementHeight}px`,
           // Improve font rendering
-          '-webkit-font-smoothing': 'antialiased',
-          '-moz-osx-font-smoothing': 'grayscale',
-          'text-rendering': 'optimizeLegibility',
+          "-webkit-font-smoothing": "antialiased",
+          "-moz-osx-font-smoothing": "grayscale",
+          "text-rendering": "optimizeLegibility",
         },
         // Improve pixel ratio for retina displays
         pixelRatio: scale,
@@ -962,17 +1007,17 @@ const Invoice = ({ mode, setMode }) => {
         compress: true, // Enable compression
         precision: 3, // A bit more precision for improved rendering
       });
-      
+
       // Add JPEG image with compression
       pdf.addImage(
-        jpegDataUrl, 
-        "JPEG", 
-        0, 
-        0, 
-        pdfWidth, 
-        pdfHeight, 
-        undefined, 
-        "FAST" // Use fast compression
+        jpegDataUrl,
+        "JPEG",
+        0,
+        0,
+        pdfWidth,
+        pdfHeight,
+        undefined,
+        "FAST", // Use fast compression
       );
 
       // Generate filename
@@ -1006,7 +1051,8 @@ const Invoice = ({ mode, setMode }) => {
       try {
         const dropboxTargetPath = `/Shiran Tal/Modus/הצעות מחיר/${fileName}`;
         // Extract the Monday item object from the response
-        const mondayItem = mondayResponse?.data?.items?.[0] || mondayResponse?.[0];
+        const mondayItem =
+          mondayResponse?.data?.items?.[0] || mondayResponse?.[0];
         console.log("Uploading PDF to Dropbox at:", mondayItem);
         if (mondayItem) {
           // Pass the itemId from URL query parameter
