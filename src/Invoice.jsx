@@ -272,7 +272,7 @@ const InvoiceHeader = ({ mode }) => {
 const TableHeader = ({ mode }) => {
   return (
     <div className="md:ps-10 ">
-      <div className="flex justify-between md:gap-4 px-4 font-medium">
+      <div className="flex md:gap-4 px-4 font-medium">
         <div
           className={`text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
@@ -459,6 +459,7 @@ const TableRow = ({
           >
             {totalPrice} ₪
           </div>
+
         </div>
       </div>
     </>
