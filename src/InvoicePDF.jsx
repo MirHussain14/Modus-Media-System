@@ -118,7 +118,7 @@ const InvoiceHeaderPDF = ({ mode }) => {
         setMetaData({
           proposalNumber: result.proposalNumber || "744",
           address: result.address || "משרד דיין 3, ראשון לציין",
-          accountName: result.accountName || "סוויטיים סינמה סיטי ראשלצ בע\"מ",
+          accountName: result.accountName || 'סוויטיים סינמה סיטי ראשלצ בע"מ',
           contactName: result.contactName || "תומר שי",
         });
         setLoading(false);
@@ -140,13 +140,15 @@ const InvoiceHeaderPDF = ({ mode }) => {
 
   // Get today's date in DD/MM/YYYY format
   const now = new Date();
-  const day = String(now.getDate()).padStart(2, '0');
-  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, "0");
+  const month = String(now.getMonth() + 1).padStart(2, "0");
   const year = now.getFullYear();
   const today = `${day}/${month}/${year}`;
 
   // Remove 'MS' prefix and any hyphens
-  const proposalNumberClean = metaData.proposalNumber.replace(/^MS\s*/i, "").replace(/-/g, "");
+  const proposalNumberClean = metaData.proposalNumber
+    .replace(/^MS\s*/i, "")
+    .replace(/-/g, "");
 
   return (
     <div dir="rtl" className="mt-12">
@@ -291,18 +293,22 @@ const TableRowPDF = ({
           {quantity}
         </div>
         <div
-          className={`text-center text-2xl ${
+          className={`text-center text-xs md:text-2xl ${
             mode === "dark" ? "text-white" : "text-gray-700"
-          } flex-1`}
+          } flex items-center justify-between w-full`}
+          style={{ width: "140px", flexShrink: 0 }}
         >
-          {unitPrice} ₪
+          <p className="text-center w-full md:ps-5">{unitPrice}</p>
+          <p>₪</p>
         </div>
         <div
-          className={`text-left text-2xl font-medium ${
-            mode === "dark" ? "text-white" : "text-gray-800"
-          } flex-1`}
+          className={`text-center text-xs md:text-2xl ${
+            mode === "dark" ? "text-white" : "text-gray-700"
+          } flex items-center justify-between w-full`}
+          style={{ width: "140px", flexShrink: 0 }}
         >
-          {totalPrice} ₪
+          <p className="text-center w-full md:ps-5">{unitPrice}</p>
+          <p>₪</p>
         </div>
       </div>
     </div>
@@ -335,7 +341,8 @@ const PricingTablePDF = ({ title, mode, items = [], showDownload = false }) => {
           position: relative;
           padding: 0px;
           border-radius: 16px;
-          background: linear-gradient(
+          background:
+            linear-gradient(
                 ${mode === "dark" ? "#042140" : "#ffffff"},
                 ${mode === "dark" ? "#042140" : "#ffffff"}
               )
@@ -396,7 +403,7 @@ const PricingTablePDF = ({ title, mode, items = [], showDownload = false }) => {
           )}
           {items.length > 0 && (
             <TableRowPDF
-description={`סה״כ ${title} לפני מע״מ`}
+              description={`סה״כ ${title} לפני מע״מ`}
               unit=""
               quantity=""
               unitPrice=""
@@ -472,74 +479,86 @@ const FooterPDF = ({ mode }) => {
             </div>
           </div>
           <div className="hidden md:block">
-<p
-  style={{
-    direction: "rtl",
-    textAlign: "right",
-    textWrap: "balance",
-    wordSpacing: "0.55rem",   // <-- sweet spot
-    maxWidth: "70ch"          // <-- creates the clean justified "box"
-  }}
-  className={` ${
-              mode === "dark" ? "text-white" : "text-[#042140]"
-            }  text-sm md:text-base leading-5`}
->
-מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום</p>
-<p
-  style={{
-    direction: "rtl",
-    textAlign: "right",
-    textWrap: "balance",
-    wordSpacing: "0.35rem",   // <-- sweet spot
-    maxWidth: "70ch"          // <-- creates the clean justified "box"
-  }}
-  className={` ${
-              mode === "dark" ? "text-white" : "text-[#042140]"
-            }  text-sm md:text-base leading-5`}
->
-התקשורת, מתח נמוך ומולטימדיה. בשנתיים האחרונות הקמנו</p>
-<p
-  style={{
-    direction: "rtl",
-    textAlign: "right",
-    textWrap: "balance",
-    wordSpacing: "0.44rem",   // <-- sweet spot
-    maxWidth: "70ch"          // <-- creates the clean justified "box"
-  }}
-  className={` ${
-              mode === "dark" ? "text-white" : "text-[#042140]"
-            }  text-sm md:text-base leading-5`}
->מחלקת מחשוב עם התמחות בפתרונות תקשורת מתקדמים</p>
-<p
-  style={{
-    textAlign: "right",
-    wordSpacing: "0.44rem",   // <-- sweet spot
-  }}
-  className={`text-right ${
-              mode === "dark" ? "text-white" : "text-[#042140]"
-            }  text-sm mb-4 md:text-base leading-5`}>והכל תחת קורת גג אחת.</p> </div>
-            <div className="block md:hidden">
             <p
-            className={`text-center ${
-              mode === "dark" ? "text-white" : "text-[#042140]"
-            }  text-sm mb-4 md:text-base leading-5`}
-          >
-            מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום התקשורת, מתח נמוך ומולטימדיה. בשנתיים האחרונות הקמנו מחלקת מחשוב עם התמחות בפתרונות תקשורת מתקדמים והכל תחת קורת גג אחת. 
-          </p>
+              style={{
+                direction: "rtl",
+                textAlign: "right",
+                textWrap: "balance",
+                wordSpacing: "0.55rem", // <-- sweet spot
+                maxWidth: "70ch", // <-- creates the clean justified "box"
+              }}
+              className={` ${
+                mode === "dark" ? "text-white" : "text-[#042140]"
+              }  text-sm md:text-base leading-5`}
+            >
+              מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום
+            </p>
+            <p
+              style={{
+                direction: "rtl",
+                textAlign: "right",
+                textWrap: "balance",
+                wordSpacing: "0.35rem", // <-- sweet spot
+                maxWidth: "70ch", // <-- creates the clean justified "box"
+              }}
+              className={` ${
+                mode === "dark" ? "text-white" : "text-[#042140]"
+              }  text-sm md:text-base leading-5`}
+            >
+              התקשורת, מתח נמוך ומולטימדיה. בשנתיים האחרונות הקמנו
+            </p>
+            <p
+              style={{
+                direction: "rtl",
+                textAlign: "right",
+                textWrap: "balance",
+                wordSpacing: "0.44rem", // <-- sweet spot
+                maxWidth: "70ch", // <-- creates the clean justified "box"
+              }}
+              className={` ${
+                mode === "dark" ? "text-white" : "text-[#042140]"
+              }  text-sm md:text-base leading-5`}
+            >
+              מחלקת מחשוב עם התמחות בפתרונות תקשורת מתקדמים
+            </p>
+            <p
+              style={{
+                textAlign: "right",
+                wordSpacing: "0.44rem", // <-- sweet spot
+              }}
+              className={`text-right ${
+                mode === "dark" ? "text-white" : "text-[#042140]"
+              }  text-sm mb-4 md:text-base leading-5`}
+            >
+              והכל תחת קורת גג אחת.
+            </p>{" "}
+          </div>
+          <div className="block md:hidden">
+            <p
+              className={`text-center ${
+                mode === "dark" ? "text-white" : "text-[#042140]"
+              }  text-sm mb-4 md:text-base leading-5`}
+            >
+              מאז שנת 2014 חברת מודוס מתמחה בפרויקטים בתחום התקשורת, מתח נמוך
+              ומולטימדיה. בשנתיים האחרונות הקמנו מחלקת מחשוב עם התמחות בפתרונות
+              תקשורת מתקדמים והכל תחת קורת גג אחת. 
+            </p>
           </div>
           <p
             className={`text-justify text-base leading-5 ${
               mode === "dark" ? "text-white" : "text-[#042140]"
             } mb-4`}
           >
-            אנחנו מציעים חלופה מתקדמת ששמה את הלקוח במרכז. מעמידים ללקוחות שלנו מרכז שירות ותמיכה מתקדמים עם היענות גבוהה מסביב לשעון.
+            אנחנו מציעים חלופה מתקדמת ששמה את הלקוח במרכז. מעמידים ללקוחות שלנו
+            מרכז שירות ותמיכה מתקדמים עם היענות גבוהה מסביב לשעון.
           </p>
           <p
             className={`text-justify text-base leading-5 ${
               mode === "dark" ? "text-white" : "text-[#042140]"
             } mb-4`}
           >
-            נמשיך לפתח מוצרים וממשקים “אין האוס” כחול-לבן, כדיי להוביל את השוק לצד לקוחותינו , בחוד החנית הטכנולוגית.
+            נמשיך לפתח מוצרים וממשקים “אין האוס” כחול-לבן, כדיי להוביל את השוק
+            לצד לקוחותינו , בחוד החנית הטכנולוגית.
           </p>
         </div>
       </div>
@@ -704,7 +723,6 @@ const InvoicePDF = ({ mode }) => {
         });
     });
   }, [itemId]);
-
 
   if (error) {
     return (
