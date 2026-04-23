@@ -280,28 +280,32 @@ const TableHeader = ({ mode }) => {
         <div
           className={`text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
-          } md:text-2xl flex-3`}
+          } md:text-2xl`}
+          style={{ flex: '3 1 0', minWidth: 0 }}
         >
           תיאור
         </div>
         <div
-          className={`md:text-right md:ps-24 text-[10px] md:opacity-[80%] ${
+          className={`text-center text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
-          } md:text-2xl flex-1`}
+          } md:text-2xl`}
+          style={{ width: '100px', flexShrink: 0 }}
         >
           כמות
         </div>
         <div
-          className={`md:text-right md:pe-1 text-[10px] md:opacity-[80%] ${
+          className={`text-center text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
-          } md:text-2xl flex-1`}
+          } md:text-2xl`}
+          style={{ width: '140px', flexShrink: 0 }}
         >
           מחיר יח'
         </div>
         <div
-          className={`md:text-left text-left md:ps-0 ps-2 text-[10px] md:opacity-[80%] ${
+          className={`text-center text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
-          } md:text-2xl flex-1`}
+          } md:text-2xl`}
+          style={{ width: '160px', flexShrink: 0 }}
         >
           סה"כ מחיר
         </div>
@@ -469,29 +473,34 @@ const TableRow = ({
               </div>
             )}
           </div>
-          <div
-            className={`text-center text-xs md:text-2xl ${
-              mode === "dark" ? "text-white" : "text-gray-700"
-            } flex-1 gap-4 flex items-center justify-center`}
-          >
-            {quantity}
-          </div>
-          <div
-            className={`text-center text-xs md:text-2xl ${
-              mode === "dark" ? "text-white" : "text-gray-700"
-            } flex-1 gap-4 flex items-center justify-center`}
-          >
-            <p>{unitPrice}</p>
-            <p>₪</p>
-          </div>
-          <div
-            className={`text-left text-xs md:text-2xl ${
-              mode === "dark" ? "text-white" : "text-gray-700"
-            } flex-1 gap-4 flex items-center justify-end`}
-          >
-            <p>{totalPrice}</p>
-            {showCurrency && <p>₪</p>}
-          </div>
+<div
+  className={`text-center text-xs md:text-2xl ${
+    mode === "dark" ? "text-white" : "text-gray-700"
+  } flex items-center justify-center`}
+  style={{ width: '100px', flexShrink: 0 }}
+>
+  {quantity}
+</div>
+
+<div
+  className={`text-center text-xs md:text-2xl ${
+    mode === "dark" ? "text-white" : "text-gray-700"
+  } flex items-center justify-center gap-1`}
+  style={{ width: '140px', flexShrink: 0 }}
+>
+  <p>{unitPrice}</p>
+  <p>₪</p>
+</div>
+
+<div
+  className={`text-center text-xs md:text-2xl ${
+    mode === "dark" ? "text-white" : "text-gray-700"
+  } flex items-center justify-center gap-1`}
+  style={{ width: '160px', flexShrink: 0 }}
+>
+  <p>{totalPrice}</p>
+  {showCurrency && <p>₪</p>}
+</div>
         </div>
       </div>
     </>
@@ -589,8 +598,6 @@ const PricingTable = ({
 
       {/* Header outside the border */}
       <TableHeader mode={mode} />
-
-      {/* Bordered table body with animated rotating gradient border using CSS custom properties */}
       <div className="rotating-gradient-border mt-2">
         <div
           className={`${
