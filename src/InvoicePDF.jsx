@@ -2,6 +2,31 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { getProposalMetaAndAccount } from "./monday";
 
+const parseNumericValue = (value) => {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const normalized = value.replace(/,/g, "").trim();
+  if (!normalized) {
+    return null;
+  }
+
+  const match = normalized.match(/-?\d+(?:\.\d+)?/);
+  if (!match) {
+    return null;
+  }
+
+  const parsed = Number(match[0]);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const isNumericValue = (value) => parseNumericValue(value) !== null;
+
 // HeaderPDF Component
 const HeaderPDF = ({ mode, setMode }) => {
   return (
@@ -192,33 +217,37 @@ const InvoiceHeaderPDF = ({ mode }) => {
 // TableHeaderPDF Component
 const TableHeaderPDF = ({ mode }) => {
   return (
-    <div className="md:ps-10 ">
-      <div className="flex justify-between md:gap-4 px-4 font-medium">
+    <div className="md:ps-10 md:pe-24">
+      <div className="flex md:gap-4 px-4 font-medium">
         <div
           className={`text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
-          } md:text-2xl flex-3`}
+          } md:text-2xl`}
+          style={{ flex: "3 1 0", minWidth: 0 }}
         >
           תיאור
         </div>
         <div
-          className={`md:text-right md:ps-21 text-[10px] md:opacity-[80%] ${
+          className={`text-center text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
-          } md:text-2xl flex-1`}
+          } md:text-2xl`}
+          style={{ width: "100px", flexShrink: 0 }}
         >
           כמות
         </div>
         <div
-          className={`md:text-right md:pe-1 text-[10px] md:opacity-[80%] ${
+          className={`text-center text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
-          } md:text-2xl flex-1`}
+          } md:text-2xl`}
+          style={{ width: "140px", flexShrink: 0 }}
         >
           מחיר יח'
         </div>
         <div
-          className={`md:text-left text-left md:ps-0 ps-2 text-[10px] md:opacity-[80%] ${
+          className={`text-center text-[10px] md:opacity-[80%] ${
             mode === "dark" ? "text-white" : "text-[#042140]"
-          } md:text-2xl flex-1`}
+          } md:text-2xl`}
+          style={{ width: "160px", flexShrink: 0 }}
         >
           סה"כ מחיר
         </div>
@@ -238,12 +267,14 @@ const TableRowPDF = ({
   isTotal = false,
   mode,
 }) => {
+  const showCurrency = isNumericValue(totalPrice);
+
   if (isTotal) {
     return (
-      <div className="px-6">
-        <div className="flex justify-between gap-4 px-6 py-4">
+      <div className="px-6 md:ps-12 md:pe-28">
+        <div className="flex justify-between gap-4 py-4">
           <div
-            className={`text-right text-2xl flex-3 ${
+            className={`text-right text-xs md:text-2xl md:flex-3 flex-4 ${
               mode === "dark" ? "text-white" : "text-black"
             }`}
           >
@@ -255,9 +286,10 @@ const TableRowPDF = ({
           <div
             className={`text-left font-bold ${
               mode === "dark" ? "text-white" : " text-gradient"
-            } text-2xl flex-1`}
+            } text-xs md:text-2xl md:flex-1 gap-4 flex items-center justify-end`}
           >
-            {totalPrice} ₪
+            <p>{totalPrice}</p>
+            {showCurrency && <p>₪</p>}
           </div>
         </div>
       </div>
@@ -265,11 +297,11 @@ const TableRowPDF = ({
   }
 
   return (
-    <div className="px-6">
-      <div className="flex justify-between gap-4 px-6 py-2 border-b border-gray-300">
+    <div className="px-6 md:ps-12 md:pe-28">
+      <div className="flex justify-center gap-4 py-2 border-b border-gray-300">
         <div className="text-right flex-3">
           <div
-            className={`font-medium text-2xl ${
+            className={`font-medium text-xs md:text-2xl ${
               mode === "dark" ? "text-white" : "text-gray-800"
             }`}
           >
@@ -277,7 +309,7 @@ const TableRowPDF = ({
           </div>
           {subtitle && (
             <div
-              className={`text-[14px] ${
+              className={`text-[9px] md:text-[14px] ${
                 mode === "dark" ? "text-gray-300" : "text-gray-500"
               } mt-1`}
             >
@@ -286,9 +318,10 @@ const TableRowPDF = ({
           )}
         </div>
         <div
-          className={`text-center text-2xl ${
+          className={`text-center text-xs md:text-2xl ${
             mode === "dark" ? "text-white" : "text-gray-700"
-          } flex-1`}
+          } flex items-center justify-center`}
+          style={{ width: "100px", flexShrink: 0 }}
         >
           {quantity}
         </div>
@@ -305,10 +338,10 @@ const TableRowPDF = ({
           className={`text-center text-xs md:text-2xl ${
             mode === "dark" ? "text-white" : "text-gray-700"
           } flex items-center justify-between w-full`}
-          style={{ width: "140px", flexShrink: 0 }}
+          style={{ width: "160px", flexShrink: 0 }}
         >
-          <p className="text-center w-full md:ps-5">{unitPrice}</p>
-          <p>₪</p>
+          <p className="text-center w-full md:ps-5">{totalPrice}</p>
+          {showCurrency && <p>₪</p>}
         </div>
       </div>
     </div>
@@ -318,7 +351,7 @@ const TableRowPDF = ({
 // PricingTablePDF Component
 const PricingTablePDF = ({ title, mode, items = [], showDownload = false }) => {
   const totalPrice = items.reduce((sum, item) => {
-    const price = parseFloat(item.totalPrice) || 0;
+    const price = parseNumericValue(item.totalPrice) ?? 0;
     return sum + price;
   }, 0);
 
@@ -602,14 +635,10 @@ const processApiData = (apiResponse) => {
     let unitPrice = "";
     let totalPrice = "";
 
-    const lookupDescription =
-      columnValues.find((col) => col.id === "lookup_mksycx2a")?.display_value ||
-      "";
     const relationDescription =
       columnValues.find((col) => col.id === "board_relation_mksymdzw")
         ?.display_value || "";
-    description =
-      lookupDescription || relationDescription || subitem.name || "פריט";
+    description = relationDescription || subitem.name || "פריט";
 
     columnValues.forEach((column) => {
       const columnId = column.id || "";
