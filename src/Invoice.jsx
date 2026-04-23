@@ -485,20 +485,20 @@ const TableRow = ({
 <div
   className={`text-center text-xs md:text-2xl ${
     mode === "dark" ? "text-white" : "text-gray-700"
-  } flex items-center justify-center gap-1`}
+  } flex items-center justify-between w-full`}
   style={{ width: '140px', flexShrink: 0 }}
 >
-  <p>{unitPrice}</p>
+  <p className="text-center w-full md:ps-5">{unitPrice}</p>
   <p>₪</p>
 </div>
 
 <div
   className={`text-center text-xs md:text-2xl ${
     mode === "dark" ? "text-white" : "text-gray-700"
-  } flex items-center justify-center gap-1`}
+  } flex items-center justify-between w-full`}
   style={{ width: '160px', flexShrink: 0 }}
 >
-  <p>{totalPrice}</p>
+  <p className="text-center w-full md:ps-5">{totalPrice}</p>
   {showCurrency && <p>₪</p>}
 </div>
         </div>
